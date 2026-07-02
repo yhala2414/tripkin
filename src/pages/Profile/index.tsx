@@ -147,10 +147,7 @@ function Profile() {
       activeCompanions: companionInvitations.filter(
         (invitation) => invitation.status === 'sent',
       ).length,
-      matchBreakdown:
-        companionInvitations.length > 0
-          ? Object.values(invitationBreakdown)
-          : mockProfileData.matchingProfile.matchBreakdown,
+      matchBreakdown: Object.values(invitationBreakdown),
     }
   }, [companionInvitations])
   const favoriteBottleItems = useMemo<MockFavoriteBottle[]>(

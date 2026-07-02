@@ -1,7 +1,6 @@
 ﻿import { useState, useMemo, type ReactElement } from 'react'
 import { createPortal } from 'react-dom'
 import { Toast } from 'antd-mobile'
-import { MOCK_STORIES } from './mockStories'
 import type { MockStory } from './mockStories'
 import styles from './TravelStoriesPage.module.less'
 
@@ -114,7 +113,7 @@ interface TravelStoriesPageProps {
 
 export function TravelStoriesPage({
   visible,
-  stories = MOCK_STORIES,
+  stories = [],
   onClose,
 }: TravelStoriesPageProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('all')

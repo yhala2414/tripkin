@@ -23,6 +23,13 @@
 
 ## 2. P0 闭环断点
 
+### Stage 1 前端资产持久化接入与补齐验收已完成
+
+- 回标时间：2026-07-02。
+- 已完成范围：`useUserAssetStore` 继续使用 `tripkin-user-assets-v1` 做 Stage 1 前端持久化；Bottle 收藏、点赞、关注，Match 行程申请、同行邀请，以及 Profile 故事、行程、搭子、收藏区块已读写同一前端资产源。
+- 本轮补齐：Profile 已移除故事、行程、同行记录、收藏子页的隐式 mock fallback；空资产时展示“还没有沉淀行为”的空态，避免首页数字和点进列表不一致。
+- 边界说明：这不是 Stage 2 完成标记；用户资产尚未迁移到 `server/` API/database，后续仍需通过 `src/services` 设计并接入后端契约。
+
 ### 用户资产没有统一模型，Profile 大部分不是行为沉淀
 
 - 证据文件：`src/pages/Profile/index.tsx`、`src/pages/Profile/mock.ts`

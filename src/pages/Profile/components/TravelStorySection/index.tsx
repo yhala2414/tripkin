@@ -65,6 +65,15 @@ export function TravelStorySection({
           ))}
         </div>
       )}
+      {featuredStories.length === 0 && (
+        <div className={styles.emptyState}>
+          <strong>{'还没有旅行故事沉淀'}</strong>
+          <span>{'去漂流瓶发布第一段旅程后，这里会同步展示。'}</span>
+          <button type="button" onClick={() => navigate('/bottle')}>
+            {'去写漂流瓶'}
+          </button>
+        </div>
+      )}
 
       <TravelStoriesPage
         visible={storiesOpen}

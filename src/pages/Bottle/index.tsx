@@ -510,6 +510,9 @@ function Bottle() {
                   <span className={styles.cardBody}>
                     <span className={styles.cardTitleRow}>
                       <strong>{bottle.authorName}</strong>
+                      {bottle.isFollowing && (
+                        <span className={styles.followStateBadge}>已关注</span>
+                      )}
                       <i>{typeLabels[bottle.type]}瓶</i>
                     </span>
                     <em>{bottle.authorPersona}</em>

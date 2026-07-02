@@ -4,9 +4,6 @@ import { FavoriteDestinationsPage } from '../FavoriteDestinationsPage'
 import { FavoriteBottlesPage } from '../FavoriteBottlesPage'
 import { FavoriteCompanionsPage } from '../FavoriteCompanionsPage'
 import {
-  favoriteDestinations,
-  favoriteBottles,
-  favoriteCompanions,
   type MockFavoriteBottle,
   type MockFavoriteCompanion,
   type MockFavoriteDestination,
@@ -28,9 +25,9 @@ const PAGE_MAP: Record<string, string> = {
 
 export function CollectionSection({
   collectionStats,
-  destinationItems = favoriteDestinations,
-  bottleItems = favoriteBottles,
-  companionItems = favoriteCompanions,
+  destinationItems = [],
+  bottleItems = [],
+  companionItems = [],
 }: CollectionSectionProps) {
   const [openPage, setOpenPage] = useState<string | null>(null)
 
