@@ -9,6 +9,10 @@ import {
   typeLabels,
   visibilityLabels,
 } from '@/pages/Bottle/data/bottleMockData'
+import {
+  getCreatedBottlesForDestination,
+  recordCreatedBottle,
+} from '@/services/userAssetService'
 
 export { bottleTypeOptions, defaultBottleImage, typeLabels, visibilityLabels }
 export type { BottleMessage, BottleType, BottleVisibilityType }
@@ -54,8 +58,6 @@ type BottleApiMessage = Partial<Omit<BottleMessage, 'type'>> & {
 type BottleApiListResult = Omit<BottleListResult, 'items'> & {
   items: BottleApiMessage[]
 }
-
-const localCreatedBottlesByDest: Record<string, BottleMessage[]> = {}
 
 function getApiBaseUrl() {
   return import.meta.env.VITE_API_BASE_URL?.trim() ?? ''
@@ -211,11 +213,6 @@ function createLocalBottle({
     publishTimeText: '\u521a\u521a',
   }
 
-  localCreatedBottlesByDest[destId] = [
-    newBottle,
-    ...(localCreatedBottlesByDest[destId] ?? []),
-  ]
-
   return newBottle
 }
 
@@ -229,7 +226,7 @@ export async function getBottleListForDestination(
     return {
       ...adaptedResult,
       items: [
-        ...(localCreatedBottlesByDest[options.destId] ?? []),
+        ...getCreatedBottlesForDestination(options.destId),
         ...adaptedResult.items,
       ],
     }
@@ -246,7 +243,10 @@ export async function createBottleMessage(
   options: CreateBottleMessageOptions,
 ): Promise<BottleMessage> {
   if (!getApiBaseUrl()) {
-    return createLocalBottle(options)
+    const newBottle = createLocalBottle(options)
+    recordCreatedBottle(newBottle)
+
+    return newBottle
   }
 
   const createdBottle = await requestBottleApi<BottleApiMessage>(
@@ -264,5 +264,8 @@ export async function createBottleMessage(
     },
   )
 
-  return normalizeBottleMessage(createdBottle, options)
+  const normalizedBottle = normalizeBottleMessage(createdBottle, options)
+  recordCreatedBottle(normalizedBottle)
+
+  return normalizedBottle
 }

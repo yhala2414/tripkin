@@ -2,16 +2,19 @@
 import { useNavigate } from 'react-router-dom'
 import type { MockBottleStats, MockFeaturedStory } from '../../mock'
 import { TravelStoriesPage } from '../TravelStoriesPage'
+import type { MockStory } from '../TravelStoriesPage/mockStories'
 import styles from './TravelStorySection.module.less'
 
 interface TravelStorySectionProps {
   bottleStats: MockBottleStats
   featuredStories: MockFeaturedStory[]
+  storyItems: MockStory[]
 }
 
 export function TravelStorySection({
   bottleStats,
   featuredStories,
+  storyItems,
 }: TravelStorySectionProps) {
   const navigate = useNavigate()
   const [storiesOpen, setStoriesOpen] = useState(false)
@@ -62,9 +65,19 @@ export function TravelStorySection({
           ))}
         </div>
       )}
+      {featuredStories.length === 0 && (
+        <div className={styles.emptyState}>
+          <strong>{'还没有旅行故事沉淀'}</strong>
+          <span>{'去漂流瓶发布第一段旅程后，这里会同步展示。'}</span>
+          <button type="button" onClick={() => navigate('/bottle')}>
+            {'去写漂流瓶'}
+          </button>
+        </div>
+      )}
 
       <TravelStoriesPage
         visible={storiesOpen}
+        stories={storyItems}
         onClose={() => setStoriesOpen(false)}
       />
     </section>

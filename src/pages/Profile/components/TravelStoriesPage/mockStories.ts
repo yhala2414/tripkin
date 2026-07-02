@@ -1,5 +1,5 @@
 ﻿export interface MockStory {
-  id: number
+  id: number | string
   city: string
   title: string
   summary: string

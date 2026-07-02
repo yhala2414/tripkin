@@ -1,4 +1,5 @@
 import { Popup, Toast } from 'antd-mobile'
+import { createCompanionInvitation } from '@/services/userAssetService'
 import type { PartnerMatchCardData } from '../../types'
 import MatchIcon from '../MatchIcon'
 import styles from './ProfileSheet.module.less'
@@ -86,7 +87,10 @@ function ProfileSheet({ partner, visible, onClose }: ProfileSheetProps) {
           <button
             type="button"
             className={styles.primaryAction}
-            onClick={() => Toast.show({ content: '已发起同行邀请' })}
+            onClick={() => {
+              createCompanionInvitation(partner)
+              Toast.show({ content: '已发起同行邀请' })
+            }}
           >
             发起同行邀请
             <MatchIcon name="send" />

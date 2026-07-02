@@ -2,10 +2,12 @@
 import { useNavigate } from 'react-router-dom'
 import type { MockMatchingProfile } from '../../mock'
 import { CompanionHistory } from '../CompanionHistory'
+import type { CompanionHistoryItem } from '../CompanionHistory'
 import styles from './MatchingProfileSection.module.less'
 
 interface MatchingProfileSectionProps {
   matchingProfile: MockMatchingProfile
+  companionHistoryItems: CompanionHistoryItem[]
 }
 
 function BarChart({
@@ -44,9 +46,11 @@ function BarChart({
 
 export function MatchingProfileSection({
   matchingProfile,
+  companionHistoryItems,
 }: MatchingProfileSectionProps) {
   const navigate = useNavigate()
   const [historyOpen, setHistoryOpen] = useState(false)
+  const hasMatchAssets = companionHistoryItems.length > 0
   const maxCount = Math.max(
     ...matchingProfile.matchBreakdown.map((m) => m.count),
     1,
@@ -83,7 +87,14 @@ export function MatchingProfileSection({
       <div className={styles.divider} />
 
       <h3 className={styles.subtitle}>{'人格吸引力分布'}</h3>
-      <BarChart data={matchingProfile.matchBreakdown} max={maxCount} />
+      {hasMatchAssets ? (
+        <BarChart data={matchingProfile.matchBreakdown} max={maxCount} />
+      ) : (
+        <div className={styles.emptyState}>
+          <strong>{'还没有搭子沉淀'}</strong>
+          <span>{'发起同行邀请后，这里会汇总你的匹配记录。'}</span>
+        </div>
+      )}
 
       <button
         type="button"
@@ -95,6 +106,7 @@ export function MatchingProfileSection({
 
       <CompanionHistory
         visible={historyOpen}
+        items={companionHistoryItems}
         onClose={() => setHistoryOpen(false)}
       />
     </section>

@@ -22,6 +22,7 @@ import {
 } from '@/utils/destinationResolver'
 import { getRegionById, getSpotById } from '@/pages/Map/data/mapData'
 import { useTripStore } from '@/store/useTripStore'
+import { useUserAssetStore } from '@/store/useUserAssetStore'
 import { navigateBackOr } from '@/utils/navigation'
 import {
   bottleTypeOptions,
@@ -33,6 +34,11 @@ import {
   type BottleVisibilityType,
   typeLabels,
 } from '@/services/bottleService'
+import {
+  toggleAuthorFollow,
+  toggleBottleCollect,
+  toggleBottleLike,
+} from '@/services/userAssetService'
 import styles from './Bottle.module.less'
 
 const defaultDestinationId = 'sichuan-chuanxi'
@@ -40,11 +46,6 @@ const maxContentLength = 500
 
 type SortBy = 'latest' | 'hottest'
 type BottleFilter = 'all' | BottleMessage['type']
-type BottlePatch = Pick<
-  BottleMessage,
-  'isLiked' | 'isCollected' | 'isFollowing' | 'likes'
->
-
 function HeartIcon({ filled = false }: { filled?: boolean }) {
   return filled ? (
     <HeartFill aria-hidden="true" data-filled={filled} />
@@ -152,6 +153,11 @@ function Bottle() {
   const navigate = useNavigate()
   const sessionDestination = useTripStore((state) => state.destination)
   const setDestination = useTripStore((state) => state.setDestination)
+  const likedBottleIds = useUserAssetStore((state) => state.likedBottleIds)
+  const savedBottleIds = useUserAssetStore((state) => state.savedBottleIds)
+  const followedAuthorIds = useUserAssetStore(
+    (state) => state.followedAuthorIds,
+  )
   const action = searchParams.get('action')
   const queryDestination = getQueryDestination(searchParams)
   const currentDestination = useMemo(
@@ -165,9 +171,6 @@ function Bottle() {
   )
   const [sortBy, setSortBy] = useState<SortBy>('latest')
   const [activeFilter, setActiveFilter] = useState<BottleFilter>('all')
-  const [bottlePatches, setBottlePatches] = useState<
-    Record<string, Partial<BottlePatch>>
-  >({})
   const [bottleRequest, setBottleRequest] = useState<{
     requestKey: string
     result: BottleServiceListResult | null
@@ -249,17 +252,35 @@ function Bottle() {
   )
 
   const bottles = useMemo(() => {
-    const patchedBottles = baseBottles.map((bottle) => ({
-      ...bottle,
-      ...bottlePatches[bottle.id],
-    }))
+    const patchedBottles = baseBottles.map((bottle) => {
+      const isLiked = likedBottleIds.includes(bottle.id) || bottle.isLiked
+      const isCollected =
+        savedBottleIds.includes(bottle.id) || bottle.isCollected
+      const isFollowing =
+        followedAuthorIds.includes(bottle.authorId) || bottle.isFollowing
+
+      return {
+        ...bottle,
+        isLiked,
+        isCollected,
+        isFollowing,
+        likes: isLiked && !bottle.isLiked ? bottle.likes + 1 : bottle.likes,
+      }
+    })
     const visibleBottles =
       activeFilter === 'all'
         ? patchedBottles
         : patchedBottles.filter((bottle) => bottle.type === activeFilter)
 
     return sortBottles(visibleBottles, sortBy)
-  }, [activeFilter, baseBottles, bottlePatches, sortBy])
+  }, [
+    activeFilter,
+    baseBottles,
+    followedAuthorIds,
+    likedBottleIds,
+    savedBottleIds,
+    sortBy,
+  ])
 
   const selectedBottle = bottles.find(
     (bottle) => bottle.id === selectedBottleId,
@@ -287,38 +308,24 @@ function Bottle() {
     })
   }
 
-  const patchBottle = (
-    bottleId: string,
-    updater: (bottle: BottleMessage) => Partial<BottlePatch>,
-  ) => {
-    const currentBottle = bottles.find((bottle) => bottle.id === bottleId)
-
-    if (!currentBottle) {
-      return
-    }
-
-    setBottlePatches((prev) => ({
-      ...prev,
-      [bottleId]: {
-        ...prev[bottleId],
-        ...updater(currentBottle),
-      },
-    }))
-  }
-
   const handleToggleLike = (bottleId: string) => {
-    patchBottle(bottleId, (bottle) => ({
-      isLiked: !bottle.isLiked,
-      likes: bottle.isLiked ? Math.max(0, bottle.likes - 1) : bottle.likes + 1,
-    }))
+    toggleBottleLike(bottleId)
   }
 
   const handleToggleCollect = (bottleId: string) => {
-    patchBottle(bottleId, (bottle) => ({ isCollected: !bottle.isCollected }))
+    const bottle = bottles.find((item) => item.id === bottleId)
+
+    if (bottle) {
+      toggleBottleCollect(bottle)
+    }
   }
 
   const handleToggleFollow = (bottleId: string) => {
-    patchBottle(bottleId, (bottle) => ({ isFollowing: !bottle.isFollowing }))
+    const bottle = bottles.find((item) => item.id === bottleId)
+
+    if (bottle) {
+      toggleAuthorFollow(bottle.authorId)
+    }
   }
 
   const handleImagePlaceholderClick = () => {
@@ -503,6 +510,9 @@ function Bottle() {
                   <span className={styles.cardBody}>
                     <span className={styles.cardTitleRow}>
                       <strong>{bottle.authorName}</strong>
+                      {bottle.isFollowing && (
+                        <span className={styles.followStateBadge}>已关注</span>
+                      )}
                       <i>{typeLabels[bottle.type]}瓶</i>
                     </span>
                     <em>{bottle.authorPersona}</em>

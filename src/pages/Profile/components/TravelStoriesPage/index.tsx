@@ -1,7 +1,6 @@
 ﻿import { useState, useMemo, type ReactElement } from 'react'
 import { createPortal } from 'react-dom'
 import { Toast } from 'antd-mobile'
-import { MOCK_STORIES } from './mockStories'
 import type { MockStory } from './mockStories'
 import styles from './TravelStoriesPage.module.less'
 
@@ -108,19 +107,21 @@ function EmptyState({ tabKey }: { tabKey: TabKey }) {
 
 interface TravelStoriesPageProps {
   visible: boolean
+  stories?: MockStory[]
   onClose: () => void
 }
 
 export function TravelStoriesPage({
   visible,
+  stories = [],
   onClose,
 }: TravelStoriesPageProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('all')
 
   const filteredStories = useMemo(() => {
-    if (activeTab === 'all') return MOCK_STORIES
-    return MOCK_STORIES.filter((s) => s.category === activeTab)
-  }, [activeTab])
+    if (activeTab === 'all') return stories
+    return stories.filter((s) => s.category === activeTab)
+  }, [activeTab, stories])
 
   if (!visible) return null
 

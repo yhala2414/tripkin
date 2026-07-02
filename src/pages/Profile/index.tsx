@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom'
+import { useMemo } from 'react'
 import { StarOutline } from 'antd-mobile-icons'
 import { useTripStore } from '@/store/useTripStore'
+import { useUserAssetStore } from '@/store/useUserAssetStore'
 import { TravelIdentityCard } from './components/TravelIdentityCard'
 import { TravelPersonaSection } from './components/TravelPersonaSection'
 import { MatchingProfileSection } from './components/MatchingProfileSection'
@@ -11,7 +13,19 @@ import { TravelAchievementSection } from './components/TravelAchievementSection'
 import { CollectionSection } from './components/CollectionSection'
 import { SettingSection } from './components/SettingSection'
 import { mockProfileData } from './mock'
+import type { MockTrip } from './mock'
+import type { CompanionHistoryItem } from './components/CompanionHistory'
+import type { MockStory } from './components/TravelStoriesPage/mockStories'
+import type {
+  MockFavoriteBottle,
+  MockFavoriteCompanion,
+  MockFavoriteDestination,
+} from './mockFavorites'
 import styles from './Profile.module.less'
+
+function getDateText(iso: string) {
+  return iso.slice(0, 10)
+}
 
 function Profile() {
   const navigate = useNavigate()
@@ -21,11 +35,169 @@ function Profile() {
   const classicMbti = useTripStore((s) => s.classicMbti)
   const tagline = useTripStore((s) => s.tagline)
   const tags = useTripStore((s) => s.tags)
+  const createdBottles = useUserAssetStore((s) => s.createdBottles)
+  const savedBottleIds = useUserAssetStore((s) => s.savedBottleIds)
+  const savedBottleSnapshots = useUserAssetStore((s) => s.savedBottleSnapshots)
+  const tripApplications = useUserAssetStore((s) => s.tripApplications)
+  const companionInvitations = useUserAssetStore((s) => s.companionInvitations)
+  const savedCompanionIds = useUserAssetStore((s) => s.savedCompanionIds)
+  const savedCompanionSnapshots = useUserAssetStore(
+    (s) => s.savedCompanionSnapshots,
+  )
+  const savedDestinationIds = useUserAssetStore((s) => s.savedDestinationIds)
+  const savedDestinationSnapshots = useUserAssetStore(
+    (s) => s.savedDestinationSnapshots,
+  )
 
   const hasPersona = personaId !== null
   const handleSaveAccount = (newNickname: string, newTagline: string) => {
     useTripStore.setState({ nickname: newNickname, tagline: newTagline })
   }
+  const storyItems = useMemo<MockStory[]>(
+    () =>
+      createdBottles.map((bottle) => ({
+        id: bottle.id,
+        city: bottle.destinationName,
+        title: bottle.title,
+        summary: bottle.summary,
+        publishDate: getDateText(bottle.publishTime),
+        replyCount: bottle.comments,
+        favoriteCount: bottle.likes,
+        category: 'mine',
+      })),
+    [createdBottles],
+  )
+  const featuredStories = useMemo(
+    () =>
+      createdBottles.slice(0, 2).map((bottle) => ({
+        title: bottle.title,
+        destination: bottle.destinationName,
+        snippet: bottle.summary,
+      })),
+    [createdBottles],
+  )
+  const bottleStats = useMemo(
+    () => ({
+      sent: createdBottles.length,
+      replies: 0,
+      featured: 0,
+    }),
+    [createdBottles.length],
+  )
+  const recentTrips = useMemo<MockTrip[]>(
+    () =>
+      tripApplications.map((application) => ({
+        title: application.tripTitle,
+        destination: application.destination,
+        dateRange: `申请于 ${getDateText(application.createdAt)}`,
+        status: application.status === 'pending' ? 'progress' : 'done',
+      })),
+    [tripApplications],
+  )
+  const tripStats = useMemo(
+    () => ({
+      inProgress: tripApplications.filter(
+        (application) => application.status === 'pending',
+      ).length,
+      completed: tripApplications.filter(
+        (application) => application.status !== 'pending',
+      ).length,
+      nextDeparture:
+        tripApplications.length > 0
+          ? getDateText(tripApplications[0].createdAt)
+          : '暂无',
+      recentTrips,
+    }),
+    [recentTrips, tripApplications],
+  )
+  const companionHistoryItems = useMemo<CompanionHistoryItem[]>(
+    () =>
+      companionInvitations.map((invitation) => ({
+        id: invitation.id,
+        name: invitation.companionName,
+        avatarEmoji: '🤝',
+        mbti: invitation.classicMbti ?? 'MBTI',
+        persona: invitation.personaLabel ?? '旅行搭子',
+        matchDate: getDateText(invitation.createdAt),
+        tripTogether: invitation.message || '同行邀请',
+        status: invitation.status === 'sent' ? '邀请中' : '已完成',
+      })),
+    [companionInvitations],
+  )
+  const matchingProfile = useMemo(() => {
+    const invitationBreakdown = companionInvitations.reduce<
+      Record<
+        string,
+        { label: string; mbti: string; emoji: string; count: number }
+      >
+    >((result, invitation) => {
+      const label = invitation.personaLabel ?? '旅行搭子'
+      result[label] = {
+        label,
+        mbti: invitation.classicMbti ?? 'MBTI',
+        emoji: '🤝',
+        count: (result[label]?.count ?? 0) + 1,
+      }
+
+      return result
+    }, {})
+
+    return {
+      totalMatches: companionInvitations.length,
+      activeCompanions: companionInvitations.filter(
+        (invitation) => invitation.status === 'sent',
+      ).length,
+      matchBreakdown: Object.values(invitationBreakdown),
+    }
+  }, [companionInvitations])
+  const favoriteBottleItems = useMemo<MockFavoriteBottle[]>(
+    () =>
+      savedBottleSnapshots.map((bottle) => ({
+        id: bottle.id,
+        cityTag: bottle.destinationName,
+        title: bottle.title,
+        snippet: bottle.summary,
+        collectedAt: getDateText(bottle.publishTime),
+      })),
+    [savedBottleSnapshots],
+  )
+  const favoriteCompanionItems = useMemo<MockFavoriteCompanion[]>(
+    () =>
+      savedCompanionSnapshots.map((companion) => ({
+        id: companion.id,
+        avatarEmoji: companion.avatarEmoji,
+        nickname: companion.nickname,
+        mbti: companion.mbti,
+        personalityLabel: companion.personalityLabel,
+        tags: companion.tags,
+        travelStyle: companion.travelStyle,
+        collectedAt: companion.collectedAt,
+      })),
+    [savedCompanionSnapshots],
+  )
+  const favoriteDestinationItems = useMemo<MockFavoriteDestination[]>(
+    () =>
+      savedDestinationSnapshots.map((destination) => ({
+        id: destination.id,
+        cityName: destination.cityName,
+        coverEmoji: destination.coverEmoji,
+        reason: destination.reason,
+        collectedAt: destination.collectedAt,
+      })),
+    [savedDestinationSnapshots],
+  )
+  const collectionStats = useMemo(
+    () => ({
+      destinations: savedDestinationIds.length,
+      bottles: savedBottleIds.length,
+      companions: savedCompanionIds.length,
+    }),
+    [
+      savedBottleIds.length,
+      savedCompanionIds.length,
+      savedDestinationIds.length,
+    ],
+  )
 
   if (!hasPersona) {
     return (
@@ -63,6 +235,7 @@ function Profile() {
           tags={tags}
           tagline={tagline}
           travelLevel={mockProfileData.travelLevel}
+          onSaveProfile={handleSaveAccount}
         />
       </div>
 
@@ -77,21 +250,23 @@ function Profile() {
       {/* 3. Matching Profile */}
       <div className={styles.glassCard}>
         <MatchingProfileSection
-          matchingProfile={mockProfileData.matchingProfile}
+          matchingProfile={matchingProfile}
+          companionHistoryItems={companionHistoryItems}
         />
       </div>
 
       {/* 4. Travel Stories */}
       <div className={styles.glassCard}>
         <TravelStorySection
-          bottleStats={mockProfileData.bottleStats}
-          featuredStories={mockProfileData.featuredStories}
+          bottleStats={bottleStats}
+          featuredStories={featuredStories}
+          storyItems={storyItems}
         />
       </div>
 
       {/* 5. My Trips */}
       <div className={styles.glassCard}>
-        <TripSection tripStats={mockProfileData.tripStats} />
+        <TripSection tripStats={tripStats} />
       </div>
 
       {/* 6. Footprints */}
@@ -106,7 +281,12 @@ function Profile() {
 
       {/* 8. Collections */}
       <div className={styles.glassCard}>
-        <CollectionSection collectionStats={mockProfileData.collectionStats} />
+        <CollectionSection
+          collectionStats={collectionStats}
+          destinationItems={favoriteDestinationItems}
+          bottleItems={favoriteBottleItems}
+          companionItems={favoriteCompanionItems}
+        />
       </div>
 
       {/* 9. Settings */}

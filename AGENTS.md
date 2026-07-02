@@ -2,7 +2,9 @@
 
 ## Project
 
-TripKin is a mobile H5 travel companion demo built with React, Vite, TypeScript, React Router, Less, and CSS Modules. The repository also has a minimal TypeScript Express backend under `server/` for mock API handoff work.
+TripKin is a mobile H5 travel companion product moving toward a launchable MVP. The project is currently in the **MVP closure foundation phase**: keep the existing mobile H5 experience demonstrable, but prioritize user behavior, data continuity, and Profile asset accumulation over page-only presentation.
+
+The frontend is built with React, Vite, TypeScript, React Router, Less, CSS Modules, Zustand, and antd-mobile. The repository also has a TypeScript Express backend under `server/`, which is the MVP API prototype and currently uses staged in-memory/data-source implementations.
 
 ## Read First
 
@@ -30,18 +32,31 @@ If `.local-docs/` contains reference images, ask how they should be used before 
 
 ## Current Scope
 
-The current version focuses on frontend demo pages and route flow, plus a minimal `server/` TypeScript mock API chain when explicitly requested.
+The current version should advance product closure in controlled stages:
 
-Do not add these unless explicitly requested:
+1. **Stage 1: frontend closure** - use Zustand/local storage and local staged data sources to connect user assets across Home, Map, Bottle, Match, and Profile.
+2. **Stage 2: backend closure** - move user assets and user actions into `server/` API endpoints, keeping frontend access behind `src/services`.
+3. **Stage 3: AI closure** - introduce structured AI travel cards that can be saved, used to throw bottles, used to find companions, and accumulated in Profile.
+
+Capabilities that are not in the active stage must not be added casually. Do not add these unless the task explicitly opens that stage or asks for that capability:
 
 - database
-- login system
+- full login system
 - real AI API
 - new UI component library
 - complex CI
 - test framework
 
-Do not add uncertain product ideas, future plans, or unconfirmed technical choices to repository docs.
+Do not add uncertain product ideas, future plans, or unconfirmed technical choices to repository docs. If a feature is only a staged placeholder, say which store/service/API it will later write to instead of presenting it as complete.
+
+## Behavior Closure Rules
+
+User-visible success must correspond to a trackable result. For user actions such as submit, save, collect, like, follow, apply, invite, or edit profile:
+
+- Prefer writing through `src/services` or a shared `src/store` module before showing a success Toast.
+- If the stage does not yet implement the write path, the UI copy and documentation must say it is a staged placeholder.
+- Do not add page-local fake success for behavior that Profile or another page is expected to read later.
+- Profile-facing assets should be modeled as user assets before adding new isolated mock lists.
 
 ## Webapp Testing
 

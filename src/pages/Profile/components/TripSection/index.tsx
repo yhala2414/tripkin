@@ -11,6 +11,7 @@ interface TripSectionProps {
 export function TripSection({ tripStats }: TripSectionProps) {
   const navigate = useNavigate()
   const [tripsOpen, setTripsOpen] = useState(false)
+  const hasTrips = tripStats.recentTrips.length > 0
 
   return (
     <section className={styles.section}>
@@ -47,27 +48,41 @@ export function TripSection({ tripStats }: TripSectionProps) {
         </div>
       </div>
 
-      <div className={styles.tripList}>
-        {tripStats.recentTrips.map((trip, i) => (
-          <article
-            key={i}
-            className={styles.tripCard}
-            onClick={() => navigate('/map')}
-          >
-            <span
-              className={`${styles.tripStatus} ${trip.status === 'progress' ? styles.tripStatusProgress : styles.tripStatusDone}`}
-            />
-            <div className={styles.tripInfo}>
-              <h3 className={styles.tripTitle}>{trip.title}</h3>
-              <p className={styles.tripMeta}>
-                {trip.destination} {'\u00B7'} {trip.dateRange}
-              </p>
-            </div>
-          </article>
-        ))}
-      </div>
+      {hasTrips ? (
+        <div className={styles.tripList}>
+          {tripStats.recentTrips.map((trip, i) => (
+            <article
+              key={i}
+              className={styles.tripCard}
+              onClick={() => navigate('/map')}
+            >
+              <span
+                className={`${styles.tripStatus} ${trip.status === 'progress' ? styles.tripStatusProgress : styles.tripStatusDone}`}
+              />
+              <div className={styles.tripInfo}>
+                <h3 className={styles.tripTitle}>{trip.title}</h3>
+                <p className={styles.tripMeta}>
+                  {trip.destination} {'\u00B7'} {trip.dateRange}
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className={styles.emptyState}>
+          <strong>{'还没有行程申请沉淀'}</strong>
+          <span>{'在匹配页申请加入行程后，这里会同步显示记录。'}</span>
+          <button type="button" onClick={() => navigate('/match?tab=trip')}>
+            {'去找行程'}
+          </button>
+        </div>
+      )}
 
-      <TripListPage visible={tripsOpen} onClose={() => setTripsOpen(false)} />
+      <TripListPage
+        visible={tripsOpen}
+        trips={tripStats.recentTrips}
+        onClose={() => setTripsOpen(false)}
+      />
     </section>
   )
 }

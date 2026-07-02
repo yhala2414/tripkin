@@ -1,5 +1,6 @@
 import { Popup, TextArea, Toast } from 'antd-mobile'
 import { useState } from 'react'
+import { createTripApplication } from '@/services/userAssetService'
 import type { TripMatchCardData } from '../../types'
 import GradientVisual from '../GradientVisual'
 import MatchIcon from '../MatchIcon'
@@ -87,6 +88,8 @@ function JoinTripSheet({ trip, visible, onClose }: JoinTripSheetProps) {
             type="button"
             className={styles.confirm}
             onClick={() => {
+              createTripApplication(trip, message.trim())
+              setMessage('')
               Toast.show({ content: '申请已提交，状态：待处理' })
               onClose()
             }}

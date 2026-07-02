@@ -17,6 +17,7 @@ interface TravelIdentityCardProps {
   tags: string[]
   tagline: string | null
   travelLevel: MockTravelLevel
+  onSaveProfile: (nickname: string, tagline: string) => void
 }
 
 export function TravelIdentityCard({
@@ -27,6 +28,7 @@ export function TravelIdentityCard({
   tags,
   tagline,
   travelLevel,
+  onSaveProfile,
 }: TravelIdentityCardProps) {
   const presentation = personaId ? getPersonaPresentation(personaId) : null
   const persona = personaId ? PERSONALITIES[personaId] : null
@@ -34,10 +36,10 @@ export function TravelIdentityCard({
   const displayMbti = presentation?.classicMbti ?? classicMbti
   const displayTags = persona?.tags ?? presentation?.tags ?? tags
   const displayTagline = presentation?.tagline ?? tagline
+  const displayNickname = nickname ?? '旅行者'
+  const editableTagline = tagline ?? displayTagline ?? ''
 
   const [editOpen, setEditOpen] = useState(false)
-  const [editNickname, setEditNickname] = useState(nickname ?? '旅行者')
-  const [editTagline, setEditTagline] = useState(displayTagline ?? '')
 
   const levelPct =
     travelLevel.nextExp > 0
@@ -45,8 +47,7 @@ export function TravelIdentityCard({
       : 0
 
   const handleSave = (data: EditProfileData) => {
-    setEditNickname(data.nickname)
-    setEditTagline(data.tagline)
+    onSaveProfile(data.nickname, data.tagline)
     setEditOpen(false)
   }
 
@@ -79,7 +80,7 @@ export function TravelIdentityCard({
         </div>
       )}
 
-      <h1 className={styles.nickname}>{editNickname}</h1>
+      <h1 className={styles.nickname}>{displayNickname}</h1>
 
       <span className={styles.personaBadge}>
         <CompassOutline aria-hidden="true" />
@@ -102,7 +103,7 @@ export function TravelIdentityCard({
         </div>
       </div>
 
-      {editTagline && <p className={styles.slogan}>{editTagline}</p>}
+      {editableTagline && <p className={styles.slogan}>{editableTagline}</p>}
 
       {displayTags.length > 0 && (
         <div className={styles.tags}>
@@ -116,8 +117,8 @@ export function TravelIdentityCard({
 
       <EditProfileSheet
         visible={editOpen}
-        nickname={editNickname}
-        tagline={editTagline}
+        nickname={displayNickname}
+        tagline={editableTagline}
         onClose={() => setEditOpen(false)}
         onSave={handleSave}
       />

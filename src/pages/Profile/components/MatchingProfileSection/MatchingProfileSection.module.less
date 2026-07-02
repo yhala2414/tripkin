@@ -151,6 +151,27 @@
   color: var(--color-brand-primary);
 }
 
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-glass);
+}
+
+.emptyState strong {
+  color: var(--color-heading);
+  font-size: var(--font-body);
+}
+
+.emptyState span {
+  color: var(--color-muted);
+  font-size: var(--font-caption);
+  line-height: 1.5;
+}
+
 /* ---- cta ---- */
 .cta {
   display: inline-flex;

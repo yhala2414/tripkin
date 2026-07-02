@@ -202,3 +202,24 @@
   white-space: nowrap;
   padding-top: 2px;
 }
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 14px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-glass);
+}
+
+.emptyState strong {
+  color: var(--color-heading);
+  font-size: var(--font-body);
+}
+
+.emptyState span {
+  color: var(--color-muted);
+  font-size: var(--font-caption);
+  line-height: 1.5;
+}
