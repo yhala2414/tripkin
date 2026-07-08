@@ -30,6 +30,16 @@ If `.local-docs/` contains reference images, ask how they should be used before 
 - style reference
 - specific-part reference
 
+## Project-local Skills
+
+Project-owned skills live under `.agents/skills/`.
+
+When redesigning or improving the repository's AI collaboration system, documentation structure, local context policy, staged scope rules, correction loops, decision records, or verification workflow, read:
+
+- `.agents/skills/project-collaboration-operating-system/SKILL.md`
+
+This is a project collaboration asset. It does not permit copying personal AI tool skills or external local skill directories into the repository.
+
 ## Current Scope
 
 The current version should advance product closure in controlled stages:
