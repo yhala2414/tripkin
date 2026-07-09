@@ -40,6 +40,25 @@ When redesigning or improving the repository's AI collaboration system, document
 
 This is a project collaboration asset. It does not permit copying personal AI tool skills or external local skill directories into the repository.
 
+## Correction Loop
+
+When the user points out that AI ignored project docs, expanded scope, skipped verification, treated local drafts as formal rules, claimed fake completion, or repeated the same kind of mistake, stop and run a Failure Review before continuing implementation.
+
+Use this shape:
+
+```txt
+Miss:
+Expected rule:
+Failure type: agent execution / context discovery / documentation ambiguity / documentation drift / documentation gap / process failure
+Immediate correction:
+System change: none / context map / doc clarification / decision note / local draft cleanup / workflow
+Prevention:
+```
+
+If the rule was already clear, correct execution without changing team docs. If the miss came from discovery, ambiguity, drift, a missing rule, or a process gap, update the smallest authoritative doc or decision record that prevents the error from spreading.
+
+If Superpowers or another methodology skill is available, use it only as process assistance for brainstorming, debugging, planning, verification, or review. Do not copy plugin or personal AI skill directories into this repository.
+
 ## Current Scope
 
 The current version should advance product closure in controlled stages:

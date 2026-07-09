@@ -13,6 +13,7 @@
 - 底部导航：只有 `/`、`/map`、`/match`、`/profile` 显示主底栏；`/mbti`、`/mbti/test`、`/mbti/result`、`/bottle` 是流程页或分支页。
 - 组件库：标准移动端交互可使用 `antd-mobile`，视觉仍由 TripKin CSS Modules 和设计 token 控制。
 - 验证边界：源码或运行行为变更运行 `npm run lint` 和 `npm run build`；纯文档变更可按需运行 `npm run format:check`。
+- 偏航复盘：当人或 AI 误读上下文、跳过规则、扩大范围、把本地草稿当正式规则、或重复同类错误时，先做 Failure Review，分类失败来源，再决定修正行动、正式文档、决策记录或本地草稿。
 
 ## 记录模板
 
@@ -27,6 +28,14 @@
 ```
 
 ## 历史决策
+
+### 2026-07-09 Add Failure Review loop for AI collaboration drift
+
+- Type: collaboration workflow / correction loop
+- Background: AI and humans can both propagate mistakes when an execution miss, stale draft, ambiguous rule, or documentation drift is treated as the next valid starting point.
+- Decision: Add a lightweight Failure Review protocol to `docs/collaboration-guide.md`. When collaboration drifts, classify the failure before changing formal docs or continuing implementation.
+- Impact: Agents and collaborators must distinguish agent execution failures from context discovery, documentation ambiguity, documentation drift, documentation gaps, and process failures.
+- Follow-up: Keep local drafts clearly subordinate to formal docs, and add status markers to historical audit records when closed findings are kept for context.
 
 ### 2026-07-02 Add persisted user asset store for frontend closure
 

@@ -30,6 +30,19 @@ npm install
 4. 如果涉及已知断点，阅读 `docs/product-closure-audit.md`。
 5. 如果任务明确要求自动化验证、Playwright、截图验证或 webapp-testing，阅读 `docs/webapp-testing-guide.md`。
 
+## 文档权威来源
+
+当同一规则出现在多个地方时，先确认 source of truth，再同步或删减旧副本。
+
+| 文档                            | 主要职责                                                                  |
+| ------------------------------- | ------------------------------------------------------------------------- |
+| `AGENTS.md`                     | AI 必读入口、执行边界、验证要求和 Failure Review 触发规则。               |
+| `docs/collaboration-guide.md`   | 团队协作流程、Failure Review、`.local-docs/` 使用边界和决策记录触发条件。 |
+| `docs/coding-guide.md`          | 代码位置、样式、目录职责、行为闭环实现规则。                              |
+| `docs/decision-notes/README.md` | 长期有效决策摘要和会影响多人协作的历史决策。                              |
+| `docs/product-closure-audit.md` | 阶段审计证据和闭环断点记录，不是实时任务清单。                            |
+| `.local-docs/`                  | ignored 本地草稿和线索，不能作为正式需求、规范或决策依据。                |
+
 ## 开发中
 
 必须：
@@ -46,6 +59,41 @@ npm install
 - 重复 UI 出现后，再考虑抽到 `src/components`。
 - 页面内部大功能块可以抽到 `src/modules`。
 - 普通页面内部变更不需要写决策记录。
+
+## 偏航复盘与纠偏
+
+当人或 AI 发现协作偏离了项目规则，不能直接把错误包装成下一次行动继续推进。先做一次轻量 Failure Review，判断错误来自执行、上下文发现、文档歧义、文档漂移、文档缺口还是流程缺口，再决定是否修改正式文档。
+
+需要触发 Failure Review 的情况包括：
+
+- AI 忽略了已存在的正式规则。
+- AI 只读 README 就开始改动，漏读了本次任务需要的上下文。
+- `.local-docs/` 草稿、旧审计、截图或临时计划被当成正式规则。
+- 同一条规则在多个文档里出现不同版本。
+- 用户指出 AI 跳过验证、扩大范围、假装完成或重复同类错误。
+- 文档本身让两个协作者产生了合理但不同的理解。
+
+Failure Review 使用这个格式：
+
+```txt
+Miss:
+Expected rule:
+Failure type: agent execution / context discovery / documentation ambiguity / documentation drift / documentation gap / process failure
+Immediate correction:
+System change: none / context map / doc clarification / decision note / local draft cleanup / workflow
+Prevention:
+```
+
+判断规则：
+
+- 如果正式规则已经清楚，只是 AI 或人没有执行，先修正行为，不改团队文档。
+- 如果信息存在但不容易被找到，改阅读入口、上下文地图或协作说明。
+- 如果文档允许多种合理解释，澄清正式文档或补充反例。
+- 如果多个正式文档之间发生漂移，确定 source of truth，同步或删减旧副本。
+- 如果项目没有覆盖这个高频情况，补充正式规则或决策记录。
+- 如果缺少验证、反馈或交接流程，改工作流，而不是只写“下次注意”。
+
+复盘必须改变下一次行动。可以选择“不改文档”，但需要说明本轮如何修正，以及下一次如何避免同类偏航。
 
 ## 用户行为闭环协作
 
@@ -104,6 +152,8 @@ npm install
 团队成员可以使用 `.local-docs/` 保存个人草稿、AI 对话总结、截图参考、分步计划和未确认需求。
 
 `.local-docs/` 不进入 Git 提交，不作为正式需求、规范或决策依据。
+
+`.local-docs/` 中的文件默认可能过期。除非用户明确点名，否则它们只能作为线索使用；如果它们与 `AGENTS.md`、`README.md` 或 `docs/` 下的正式文档冲突，以正式文档为准，并按 Failure Review 判断是否需要清理本地草稿或更新正式说明。
 
 如果 `.local-docs/` 中有参考图，AI 或协作者不能直接猜测使用方式，必须先确认：
 
