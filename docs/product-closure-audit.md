@@ -2,6 +2,16 @@
 
 > 本文记录 TripKin 从页面型演示向 MVP 闭环产品演进前的技术产品审计结果。审计时间：2026-07-02。
 
+## 0. 阅读状态说明
+
+本文是阶段审计记录，不是永远实时的当前任务清单。阅读时需要区分：
+
+- `已完成`：该项已通过后续实现或验收关闭，但边界说明仍然有效。
+- `未关闭`：该项仍可作为当前修复线索，需要结合代码现状复核。
+- `历史断点`：该项保留为复盘证据，不能直接当作当前事实继续传播。
+
+如果本文与 `docs/decision-notes/README.md`、`docs/tripkin-product-prd.md` 或当前代码实现冲突，先做 Failure Review：判断是审计记录过期、正式规则漂移、代码实现变化，还是协作者误读，然后再决定更新审计、同步正式文档或只修正本轮行动。
+
 ## 1. 执行验证摘要
 
 | 命令 / 检查                                  | 结果     | 备注                                                                                                                       |
@@ -32,12 +42,16 @@
 
 ### 用户资产没有统一模型，Profile 大部分不是行为沉淀
 
+- 状态：历史断点，Stage 1 前端资产持久化已在后续工作中补齐。保留本节用于说明当时的闭环风险；复用本节结论前必须复核当前代码和决策记录。
+
 - 证据文件：`src/pages/Profile/index.tsx`、`src/pages/Profile/mock.ts`
 - 当前行为：Profile 只读取 `useTripStore` 中的 MBTI、昵称和签名；旅行故事、行程、足迹、成就、收藏全部来自静态页面数据。
 - 为什么影响闭环：Bottle 收藏、投瓶、Match 申请和邀请不会进入“我的”，用户行为没有资产沉淀。
 - 建议修法：新增统一用户资产 store/service，先以前端持久化打通，再迁移到 server API。
 
 ### Bottle 点赞、收藏、关注只改页面临时 state
+
+- 状态：历史断点，Stage 1 前端资产持久化已在后续工作中补齐。保留本节用于说明为什么行为成功反馈必须有资产写入路径。
 
 - 证据文件：`src/pages/Bottle/index.tsx` 的 `bottlePatches`、`handleToggleLike`、`handleToggleCollect`、`handleToggleFollow`
 - 当前行为：交互只存在当前页面 state，刷新后丢失，也不会同步 Profile。
@@ -46,12 +60,16 @@
 
 ### Match 申请加入行程是假提交
 
+- 状态：历史断点，Stage 1 前端资产持久化已在后续工作中补齐。保留本节用于说明申请类行为必须进入用户资产。
+
 - 证据文件：`src/pages/Match/components/JoinTripSheet/index.tsx`
 - 当前行为：点击提交只 Toast “申请已提交，状态：待处理”，然后关闭弹层。
 - 为什么影响闭环：Profile 的“我的行程/申请记录”没有来源。
 - 建议修法：提交 `TripApplication`，记录 `tripId`、说明、状态和时间。
 
 ### Match 发起同行邀请是假提交
+
+- 状态：历史断点，Stage 1 前端资产持久化已在后续工作中补齐。保留本节用于说明邀请类行为不能只 Toast 成功。
 
 - 证据文件：`src/pages/Match/components/ProfileSheet/index.tsx`
 - 当前行为：点击“发起同行邀请”只 Toast 成功。
@@ -60,6 +78,8 @@
 
 ### Profile 首屏编辑昵称/签名没有回写全局状态
 
+- 状态：未关闭。复用本节结论前需要结合当前 Profile 编辑入口和 `useTripStore` / 用户资产服务实现复核。
+
 - 证据文件：`src/pages/Profile/components/TravelIdentityCard/index.tsx`、`src/pages/Profile/index.tsx`
 - 当前行为：身份卡编辑只改组件内 state；设置中心账号页才回写 `useTripStore`。
 - 为什么影响闭环：同一资料编辑有两个结果，刷新后首屏编辑丢失。
@@ -67,12 +87,16 @@
 
 ### 前后端阶段性数据源分裂
 
+- 状态：未关闭。当前仍作为 Stage 2 后端闭环前的数据契约风险，需要结合 service 和 server 实现复核。
+
 - 证据文件：`src/services/bottleService.ts`、`src/pages/Bottle/data/bottleMockData.ts`、`server/src/data/bottles.ts`、`src/pages/Match/matchMock.ts`、`server/src/data/matches.ts`
 - 当前行为：前端本地数据和 server 数据各一套，依赖 service 适配。
 - 为什么影响闭环：配置 API 后可能展示另一套数据，字段语义和行为回写容易不一致。
 - 建议修法：先统一共享类型和资产写入契约，再逐步收敛数据源。
 
 ## 3. P1 产品补全项
+
+状态：未关闭清单。以下条目是后续产品补齐线索，实施前需要结合当前代码和阶段目标复核，不应被当作已确认的本轮范围。
 
 - 首页搜索/推荐只跳路由，不写目的地上下文。证据：`src/pages/Home/index.tsx` 的 `mockSearchItems`、`recommendCards`、`quickActions`。
 - Map 选择目的地能写 `useTripStore.destination` 并跳 Bottle/Match，但收藏目的地、浏览足迹、最近目的地没有沉淀。证据：`src/pages/Map/index.tsx`、`BottomSpotCard.tsx`、`BottomRegionCard.tsx`。
@@ -83,6 +107,8 @@
 - 后端 CORS 只允许 `GET,POST,OPTIONS`，后续 `PATCH/DELETE` 接口需要同步扩展。证据：`server/src/app.ts`。
 
 ## 4. P2 上线前增强项
+
+状态：未关闭增强项。以下内容只说明上线前风险方向，不代表当前阶段可以直接打开对应能力。
 
 - 数据持久化：阶段 1 可先用 Zustand persist，阶段 2 再迁移 server API。
 - 匿名身份：MVP 至少需要匿名 `userId` 或设备级身份，否则资产无法归属。
