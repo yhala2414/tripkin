@@ -13,6 +13,35 @@ TripKin 是一个移动端 H5 旅行搭子与旅行陪伴产品，当前处于 *
 
 它围绕“旅行前不知道去哪、和谁去、怎么玩”的轻量场景，串联旅行 MBTI、目的地探索、旅行漂流瓶、搭子 / 行程匹配和个人旅行身份页。当前工作重点不再只是页面能打开，而是逐步补齐用户行为、数据流转和 Profile 资产沉淀，让它从页面型演示演进为上线产品雏形。
 
+<table>
+  <tr>
+    <td>
+      <strong>一张 AI 协作系统的小贴纸</strong>
+      <br><br>
+      TripKin 不只是一个移动端 H5 旅行陪伴 MVP。它也是
+      <a href="https://github.com/yhala2414/ai-collaboration-operating-system">project-collaboration-operating-system</a>
+      skill 最早长出来的地方。
+      <br><br>
+      在 TripKin 的迭代里，我们反复遇到过一些很真实的小问题：
+      AI 没读完上下文就开工。
+      临时草稿被当成正式规则。
+      协作者对同一条文档理解不一致。
+      规则散落在不同地方，慢慢开始漂移。
+      界面说“已保存”，但背后没有写入路径。
+      任务说“完成了”，却拿不出验证证据。
+      <br><br>
+      后来，这些纠偏经验被整理成一个轻量 skill；现在它又回到 TripKin，
+      继续检验这个项目如何和 AI agent 更可靠地一起长大。
+      <br><br>
+      如果你也在和 AI 一起做项目，欢迎从 TripKin 的
+      <a href="AGENTS.md">AGENTS.md</a>、
+      <a href="docs/collaboration-guide.md">协作说明</a> 和
+      <a href="docs/decision-notes/README.md">决策记录</a> 读起。
+      也欢迎去 skill 仓库一起讨论、试用和改进这套仍在生长的 AI 协作操作系统。
+    </td>
+  </tr>
+</table>
+
 ## 产品体验
 
 当前主链路：
