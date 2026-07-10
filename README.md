@@ -1,4 +1,4 @@
-# TripKin
+# TripKin 刷到即同行
 
 <p align="center">
   <img alt="Project status" src="https://img.shields.io/badge/status-MVP%20closure%20foundation-6d5df6">
