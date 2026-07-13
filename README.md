@@ -6,7 +6,6 @@
   <img alt="React 19" src="https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white">
   <img alt="Vite 8" src="https://img.shields.io/badge/Vite-8-646cff?logo=vite&logoColor=white">
   <img alt="TypeScript 6" src="https://img.shields.io/badge/TypeScript-6-3178c6?logo=typescript&logoColor=white">
-  <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-green">
 </p>
 
 TripKin 是一个移动端 H5 旅行搭子与旅行陪伴产品，当前处于 **MVP 闭环奠基期**。
@@ -366,7 +365,3 @@ npm run build
 ```bash
 npm run format:check
 ```
-
-## 📄 License
-
-[MIT License](LICENSE).
