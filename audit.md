@@ -1,129 +1,189 @@
-# TripKin Style Audit
+# TripKin 当前产品视觉审计
 
-Audit date: 2026-06-21
+> 文档状态：持续维护的当前视觉审计入口
+>
+> 本轮审计日期：2026-07-14
+>
+> 移动端基准：375 × 812
 
-Scope: `src/**/*.less` and `src/**/*.css`. Excludes `dist/`, `node_modules/`, TSX SVG paths, mock text, and build artifacts.
+## 1. 文档职责与权威边界
 
-This rescan reflects the Home + Profile product-look migration. It is meant to answer whether the next work should continue broad style-token migration, or move to product-level visual QA and page polish.
+本文记录 TripKin 当前可见的视觉差距、验证证据和下一批建议处理项，用于回答“页面是否像同一个产品，以及下一处最值得改善的视觉问题是什么”。
 
-## Summary
+- `DESIGN.md` 是视觉规则的唯一 source of truth。
+- 本文不是设计规范，不新增字体、颜色、token、组件库或视觉方向。
+- 本文不是功能闭环清单；行为写入和数据沉淀问题由 `docs/product-closure-audit.md` 负责。
+- 当前代码和新鲜浏览器证据优先于本文历史结论。
+- 已关闭事项只保留紧凑摘要；详细迁移过程通过 Git 历史追踪。
 
-The Home + Profile style migration has moved the project past the previous blocker.
+## 2. 本轮范围、环境与方法
 
-Completed in this pass:
+本轮覆盖 Home、MBTI、Map、Bottle、Match、Profile，以及 BottomNav、BaseBottomSheet、PageTopBar、EmptyState 等共享模式。
 
-- Home shared UI patterns now use the TripKin semantic system for search, panels, cards, CTAs, typography, radius, shadows, and text roles.
-- Profile no longer has the old lavender hardcoded residue called out in the previous audit.
-- The old Profile values `#b89cff`, `#9b8ec4`, `#f4f0ff`, `#faf8ff`, `rgba(220, 207, 255, ...)`, `rgba(148, 126, 200, 0.18)`, `#4a3f6b`, `#6b5e8a`, and `--lv-*` have zero matches under `src/`.
-- Global token usage increased strongly, which means page styles are now leaning on `DESIGN.md` instead of parallel page-local systems.
+自动检查使用 `.venv` 内的 Python Playwright，在 375 × 812、移动触控上下文中完成。临时脚本、24 张状态截图和 JSON 报告均保存在忽略的 `.venv/`：
 
-Current conclusion:
+```txt
+.venv/webapp-tests/full_visual_audit_20260714.py
+.venv/webapp-artifacts/screenshots/visual-audit-20260714/
+.venv/webapp-artifacts/logs/full-visual-audit-20260714.json
+```
 
-The next work should not be another broad token sweep. The next work should be product-level visual QA and targeted page polish: check the running Home/Profile screens at 375px, then fix visible density, hierarchy, icon/copy, and interaction issues that make the demo feel less like a cohesive product.
+检查维度：
 
-## Totals
+- 横向溢出、固定元素避让、弹层宽度与滚动；
+- 触控目标、视觉层级、信息密度、截断和状态表现；
+- 图标、插画、卡片、导航和弹层的跨页面一致性；
+- 控制台错误与视觉问题分流。
 
-| Metric                            | Current | Previous audit | Read                                      |
-| --------------------------------- | ------: | -------------: | ----------------------------------------- |
-| Style files                       |      50 |             50 | Same scope                                |
-| CSS declarations                  |    5964 |           5971 | Roughly flat                              |
-| Raw color hits                    |     288 |            563 | Large drop after Home/Profile migration   |
-| Unique raw colors                 |     223 |            319 | Large drop, but decorative art remains    |
-| CSS variable references           |    1455 |            936 | Strong increase                           |
-| Unique CSS variables              |     123 |            119 | Slight increase, no new token scale added |
-| Font-size declarations            |     389 |            389 | Same count, more values now tokenized     |
-| Unique font-size declarations     |      42 |             42 | Same count                                |
-| Border-radius declarations        |     291 |            291 | Same count, more values now tokenized     |
-| Unique border-radius declarations |      54 |             56 | Slightly reduced                          |
-| Box-shadow declarations           |      86 |             87 | Slightly reduced                          |
-| Unique box-shadow declarations    |      40 |             52 | Reduced                                   |
-| Legacy Profile style hits         |       0 |        Present | Cleared                                   |
+`ui-ux-pro-max` 仅补充 44px 触控目标、固定导航避让、标题层级、对比度和弹层焦点等通用检查项。其字体、系统蓝、横向旅程布局和桌面响应式建议不适用于 TripKin，未纳入结论。
 
-Note: spacing was rescanned with a broader matcher than the old audit, so the raw spacing total is not directly comparable. It should not be used as the main success signal for this pass.
+## 3. 当前产品视觉总评
 
-## High-Frequency Variables
+TripKin 已形成可辨识的轻量旅行产品方向：浅色背景、柔和玻璃表面、紫色主强调、圆角旅行信息卡和移动端底部导航在主要页面中基本一致。Home、Map、Bottle、Match、Profile 均无 375px 横向溢出，关键弹层可以打开，空、部分和完整 Profile 状态能够渲染。
 
-| Variable                           | Count | Read                              |
-| ---------------------------------- | ----: | --------------------------------- |
-| `var(--color-muted)`               |   115 | Main secondary text role          |
-| `var(--color-heading)`             |   105 | Main title role                   |
-| `var(--color-brand-primary)`       |   100 | Primary action/selected role      |
-| `var(--font-caption)`              |    77 | Metadata/chip role now common     |
-| `var(--color-border)`              |    75 | Card/sheet/control containment    |
-| `var(--color-text)`                |    50 | Body copy role                    |
-| `var(--color-brand-primary-faint)` |    47 | Soft selected/chip surfaces       |
-| `var(--color-surface-solid)`       |    46 | Solid card/action surface         |
-| `var(--font-body)`                 |    41 | Body/input role                   |
-| `var(--color-brand-primary-line)`  |    41 | Primary soft border role          |
-| `var(--color-surface-glass)`       |    38 | Floating/glass surface role       |
-| `var(--font-title)`                |    38 | Card/section title role           |
-| `var(--radius-pill)`               |    38 | Chip/CTA/nav shape                |
-| `var(--radius-lg)`                 |    37 | Search/control/compact card shape |
-| `var(--color-brand-primary-soft)`  |    36 | Soft primary fill                 |
+当前问题已经从“页面拥有相互竞争的样式系统”转为“统一框架下的信息组织和细节成熟度不足”。视觉一致性基础成立，但以下区域仍明显影响产品完成感：
 
-The top variables now match `DESIGN.md` roles. This is the main sign that the style system is converging.
+- Match 单卡信息结构在 375px 下被横向内容挤压；
+- 多个高频操作的实际触控区域不足 44px；
+- Profile 长页面重复使用同权重白卡，扫描成本较高；
+- MBTI 的 3D 人物、emoji 功能图标与主产品扁平线性语言存在断层；
+- Home 三列推荐卡在 375px 下依赖明显截断，信息密度偏高。
 
-## File Concentration
+本轮未发现 P0 级视觉阻断问题。
 
-| File                                                                   | Raw colors | Variable refs | Read                                                                        |
-| ---------------------------------------------------------------------- | ---------: | ------------: | --------------------------------------------------------------------------- |
-| `src/pages/Home/Home.module.less`                                      |        108 |           165 | Still highest raw-color file, mostly page-local illustration and visual art |
-| `src/styles/variables.less`                                            |         51 |             9 | Expected global token source                                                |
-| `src/pages/Match/components/GradientVisual/GradientVisual.module.less` |         37 |             0 | Match decorative visual, protected baseline-adjacent                        |
-| `src/pages/Map/Map.module.less`                                        |         29 |           133 | Map rendering/overlay styles, protected baseline                            |
-| `src/components/MbtiEntryModal/MbtiEntryModal.module.less`             |          8 |            23 | Small shared modal, already token-leaning                                   |
-| `src/pages/Mbti/components/IdentityCard/IdentityCard.module.less`      |          7 |            25 | MBTI ceremony/identity visual                                               |
-| `src/pages/Bottle/Bottle.module.less`                                  |          6 |           112 | Baseline page, already token-leaning                                        |
-| `src/pages/Mbti/components/Welcome/Welcome.module.less`                |          5 |             7 | MBTI illustration/welcome area                                              |
-| `src/components/BottomNav/BottomNav.module.less`                       |          4 |             5 | Shared navigation, low drift                                                |
+## 4. 当前问题清单
 
-Profile no longer appears in the highest raw-color concentration group except tiny setting/toggle files. That is a meaningful improvement from the previous audit.
+### P0
 
-## Page Judgement
+无。24 个已检查状态均未发现横向溢出、不可关闭弹层或关键内容完全不可达。
 
-### Home
+### P1
 
-Status: migrated for shared UI, still contains local decorative art.
+#### VIS-P1-01 Match 搭子卡信息结构在 375px 下发生挤压
 
-Home no longer needs a broad token pass for search, cards, CTA, panel, text roles, or main surfaces. Its remaining raw colors mostly belong to illustration-like elements: banner scenery, quick-action glyph drawings, recommendation visuals, avatars, and bottle/partner mini art.
+- 路由/状态：`/match?dest=xinjiang`，搭子匹配。
+- 证据：`match-partner.png`、`match-profile.png`。
+- 实际表现：头像、昵称、匹配度、人格标签和“查看资料”在同一横向区域竞争空间；人格标签被压成狭窄竖列，正文起点偏右，首卡视觉重心失衡。
+- 期望表现：卡片标题、身份标签、主操作和正文形成稳定层级，长中文标签不依赖逐字换行。
+- 规则：`DESIGN.md` Card、Chip、Typography；375px 可用性基准。
+- 建议方向：重排卡片头部信息层级，限制首行同时出现的元素数量；保留 Match 视觉基准，不做整页重设计。
+- 共享影响：否，优先在 Match 页面内部处理。
 
-Do not promote those decorative colors into global tokens. If Home still feels inconsistent in the browser, fix the visible product composition directly: spacing, density, icon treatment, weather pill, emoji-like markers, and section rhythm.
+#### VIS-P1-02 高频操作存在小于 44px 的触控区域
 
-### Profile
+- 路由/状态：Bottle、Match、Profile 及部分 MBTI 状态。
+- 证据：JSON 报告中的 `smallTargets`；高频命中包括“返回”“筛选”“查看全部 ›”“编辑资料”“查看详情”。
+- 实际表现：视觉图标或文字可见，但多个按钮的实际高度或宽度不足 44px；Bottle 状态单页记录到 12–17 个小目标，Match 状态记录到 10–15 个。
+- 期望表现：高频移动操作至少提供 44 × 44px 点击区域，相邻目标保持可区分间距；视觉图标可以保持原尺寸。
+- 规则：移动端触控目标通用原则；`DESIGN.md` Button、Navigation Bar、Bottom Sheet。
+- 建议方向：优先扩大点击盒而非放大图标；先处理共享返回/关闭模式，再处理页面私有筛选和文字操作。
+- 共享影响：部分涉及 PageTopBar、BaseBottomSheet，实施前需要影响范围检查。
 
-Status: old lavender system removed; ready for visual QA.
+#### VIS-P1-03 Profile 长页面缺少明确的资产优先级
 
-Profile is no longer blocked by the old hardcoded lavender values. The next Profile work should be visual inspection rather than another mechanical replacement pass. Focus on whether its cards, sheets, empty states, toggles, and detail pages feel coherent in the running app.
+- 路由/状态：`/profile`，部分资产和完整资产。
+- 证据：`profile-partial.png`、`profile-full.png`；页面高度分别约 2920px 和 2811px。
+- 实际表现：身份、人格、匹配、故事、行程、足迹、成就、收藏和设置连续使用相近的白卡、圆角和阴影，区块权重接近；用户需要滚动较长距离才能区分核心资产和辅助统计。
+- 期望表现：身份与本轮真实沉淀资产优先，统计、长期成就和设置降低视觉权重；空、部分、完整状态保持同一信息顺序。
+- 规则：`DESIGN.md` Typography、Spacing、Card、Empty State。
+- 建议方向：先调整分组、区块节奏和标题权重，不引入新 token，不一次性重构所有 Profile 子组件。
+- 共享影响：否，主要为 Profile 页面组织；EmptyState 仅做回归检查。
 
-### Map / Match / Bottle
+#### VIS-P1-04 MBTI 与主产品视觉语言存在断层
 
-Status: keep protected.
+- 路由/状态：`/mbti`、`/mbti/test`、`/mbti/result`。
+- 证据：`mbti-welcome.png`、`mbti-quiz.png`、`mbti-result.png`。
+- 实际表现：入口以高写实感 3D 人物和大型仪式化排版为主，功能收益使用 emoji；Home、Map、Match、Bottle 则以线性图标、扁平插画和信息卡为主。流程内部成立，但回到主产品时品牌连续性较弱。
+- 期望表现：允许 MBTI 保留仪式感，但共享图标、操作按钮、背景层次和进入/离开流程的衔接应延续 TripKin 语言。
+- 规则：`DESIGN.md` 要求 MBTI 保留个性但共享按钮、卡片、文字层级和弹层模式。
+- 建议方向：先统一功能图标和流程衔接，不替换核心人物资产，不把 MBTI 改造成普通列表页。
+- 共享影响：可能涉及 MbtiEntryModal，需单独评估。
 
-Map and Match still contain page-local rendering or adapter values by design. Bottle is already token-leaning. Do not rewrite these just to reduce counts.
+#### VIS-P1-05 Home 三列推荐卡在 375px 下信息密度偏高
 
-### MBTI / Shared Modal / BottomNav
+- 路由/状态：`/`，今日推荐。
+- 证据：`home.png`、`home-search.png`。
+- 实际表现：三列卡片同时承载分类、插画、标题、两行描述和标签；中间卡标题明显省略，卡片之间的可扫读性依赖截断。
+- 期望表现：用户能快速识别推荐主题和行动价值，截断是例外而非主要布局策略。
+- 规则：`DESIGN.md` Card、Typography、Spacing；Home 可保留入口页个性。
+- 建议方向：比较减少同屏信息、调整卡片宽度或改变内容层级三种方案，再选择最小页面内修改。
+- 共享影响：否。
 
-Status: not a blocker.
+### P2
 
-These areas have some remaining page-local visual values, but they are not currently the largest source of product inconsistency. Touch them only when a concrete visual issue is found.
+#### VIS-P2-01 图标来源和视觉重量仍不统一
 
-## Next Decision
+- 路由/状态：BottomNav、Bottle 作者头像、Profile 区块标题与成就、MBTI 功能收益。
+- 证据：`home.png`、`bottle-list.png`、`profile-full.png`、`mbti-welcome.png`。
+- 实际表现：线性 antd-mobile 图标、字符符号、emoji 和插画型头像并存；BottomNav 仍使用 `⌂`、`⌖`、`◇`、`●` 字符图标。
+- 期望表现：导航和高频功能使用一致图标体系；emoji 只作为明确的内容人格或装饰，不承担通用控件职责。
+- 规则：`DESIGN.md` 的跨页面共享模式与页面个性边界。
+- 建议方向：先列出“功能图标”和“内容型 emoji”的边界，再分页面替换，避免全局机械清除 emoji。
+- 共享影响：涉及 BottomNav 时需要决策记录。
 
-Do not continue with broad style migration as the next default task.
+#### VIS-P2-02 部分辅助文字和禁用态过淡
 
-2026-06-21 update: the first targeted follow-up has started with a Bottle base-component pilot. `PageTopBar`, `BaseBottomSheet`, and `EmptyState` now cover generic Bottle shell patterns while business-specific Bottle UI remains page-local.
+- 路由/状态：Profile 设置/统计、Match 辅助信息、MBTI 次级动作。
+- 证据：`profile-full.png`、`match-partner.png`、`mbti-welcome.png`。
+- 实际表现：浅灰小字号文字在玻璃/浅色背景上的层级较弱，尤其在截图缩放后不易扫读。
+- 期望表现：辅助信息可以降权，但正文和可操作文案仍保持稳定可读性。
+- 规则：`DESIGN.md` Text Colors、Typography、Surface；轻色玻璃表面对比度原则。
+- 建议方向：实施前用实际颜色和背景计算对比度，仅调整不达标或明显影响阅读的具体角色。
+- 共享影响：如果修改全局 muted token，必须先评估全部页面并记录决策；优先页面内验证。
 
-The next task should be a product-level visual QA pass:
+## 5. 页面审计矩阵
 
-1. Run the app locally.
-2. Inspect Home and Profile at 375px width.
-3. Record visible issues: text hierarchy, clipping, cramped cards, emoji/icon inconsistency, bottom navigation overlap, sheet readability, and whether the first screen feels like one product.
-4. Make targeted fixes from that visual list.
+| 页面/模式 | 已检查状态                                         | 自动结果                       | 人工结论                                               |
+| --------- | -------------------------------------------------- | ------------------------------ | ------------------------------------------------------ |
+| Home      | 首屏、搜索、长页面、BottomNav                      | 无横向溢出                     | 产品入口成立；推荐卡密度需要 P1 跟进                   |
+| MBTI      | 欢迎、答题、结果                                   | 无横向溢出                     | 流程内部完整；与主产品语言衔接不足                     |
+| Map       | 地图页、图层弹层、固定操作区                       | 无横向溢出；有第三方控制台错误 | 固定层次可用；真实静态 fallback 未在本轮环境中独立验收 |
+| Bottle    | 列表、分类、详情、投瓶弹层                         | 无横向溢出；弹层可打开         | 基准稳定；触控目标和 emoji 头像需跟进                  |
+| Match     | 两类 Tab、筛选、资料、加入行程                     | 无横向溢出；弹层可打开         | 搭子卡头部挤压是本轮最明确的页面问题                   |
+| Profile   | 空、部分、完整、编辑、故事、行程、三类设置页       | 无横向溢出；状态均可渲染       | 长页面密度和资产优先级需要梳理                         |
+| 共享模式  | BottomNav、BaseBottomSheet、PageTopBar、EmptyState | 导航/弹层均可见                | 触控盒需要统一核查；不需要新增共享组件体系             |
 
-If screenshot or repeatable browser verification is requested, follow `docs/webapp-testing-guide.md` and keep artifacts under ignored `.venv/` paths. Otherwise, manual local visual inspection is enough for the next pass.
+Map 控制台仍出现 `INVALID_USER_DOMAIN` 和 `Unimplemented type: 3`。这是当前高德 Key/域名环境问题，不计入视觉问题，也不通过样式修改处理。本轮运行环境存在 `.env.local` 配置，因此“无 Key 时的真实静态 fallback”仅由代码路径和既有检查支持，未作为本轮浏览器通过项。
 
-## Final Judgement
+## 6. 受保护基准与非目标
 
-The style-system migration phase is far enough along. Continuing to chase raw counts would mostly hit illustration colors and protected baseline pages.
+- Map、Match、Bottle 仍是 TripKin 受保护视觉基准；确认问题可以修，但不能为了统一计数或套用外部模板而重设计。
+- 不采用外部技能建议的系统蓝、Lora/Raleway、横向旅程布局或桌面四断点体系。
+- 不新增 token、组件库、响应式缩放系统或动画依赖。
+- 不把地图环境、用户资产写入、API、登录、数据库或 AI 能力混入本审计。
+- 不因为复用可能性而新增共享组件。
 
-Next work: visual QA and targeted product polish, not another blanket token sweep.
+## 7. 第一批建议修复项
+
+下一轮建议只处理以下 4 项，并单独制定实现计划：
+
+1. `VIS-P1-01`：重排 Match 搭子卡头部，消除人格标签竖向挤压。
+2. `VIS-P1-02`：建立高频返回、关闭、筛选、查看全部的 44px 点击盒基线，先共享后页面私有。
+3. `VIS-P1-03`：为 Profile 建立身份、当前资产、长期统计、设置四级信息节奏。
+4. `VIS-P1-04`：统一 MBTI 功能型图标与进入/退出流程衔接，保留核心人物资产。
+
+Home 推荐卡作为下一批候选。图标全面清理和 muted 对比度调整必须先完成具体清单或测量，不能顺手全局修改。
+
+## 8. 验收与回标方式
+
+每个视觉修复任务必须：
+
+1. 引用一个审计 ID，并明确路由和状态。
+2. 修改前保留 375px 证据，说明实际问题而非只写“优化美观”。
+3. 限制在目标页面或已确认共享模式内。
+4. 运行 `npm run lint`、`npm run build` 和对应的 375px 浏览器检查。
+5. 复查空、部分、完整状态以及固定导航/弹层回归。
+6. 在本文将问题标为 `已关闭`、`部分关闭` 或 `仍存在`，记录日期和验证证据。
+
+如果代码现实改变或旧截图失效，先重新取证；不要把历史审计直接当作当前任务清单。
+
+## 9. 紧凑历史摘要
+
+| 日期            | 已关闭结论                                                               |
+| --------------- | ------------------------------------------------------------------------ |
+| 2026-06-21      | Home/Profile 大范围语义 token 迁移完成，停止全局 raw-color 扫荡          |
+| 2026-06-21      | 旧 Profile 淡紫色体系与 `--lv-*` 清除，Map/Match/Bottle 确认为受保护基准 |
+| 2026-06-21 之后 | PageTopBar、BaseBottomSheet、EmptyState 共享壳层试点落地                 |
+| 2026-07-14      | Home/Profile 首轮 375px 基础布局验证完成；审计转向全链路产品视觉体验     |
+
+历史统计和迁移细节不再占据当前正文；需要追溯时使用 Git 历史。

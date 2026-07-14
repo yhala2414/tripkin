@@ -6,7 +6,7 @@
 
 ## 当前有效决策摘要
 
-- 产品阶段：TripKin 当前处于 **MVP 闭环奠基期**，优先按阶段打通前端用户资产闭环、后端 API 闭环和结构化 AI 卡片闭环。
+- 产品阶段：TripKin 当前处于 **MVP 闭环奠基期**；Stage 1 核心用户资产闭环已完成，当前默认焦点是 Stage 2 API 契约准备。先定义用户资料、用户资产、行程申请和同行邀请的 API 边界，不因此开放数据库、完整登录、正式后端持久化或真实 AI。
 - 文档入口：日常开发优先阅读 `README.md`、`AGENTS.md`、`docs/coding-guide.md` 和 `docs/collaboration-guide.md`；产品范围看 `docs/tripkin-product-prd.md`；已知闭环断点看 `docs/product-closure-audit.md`。
 - 数据访问：页面通过 `src/services` 和 `src/store` 访问数据，不直接拼后端 URL。
 - 行为闭环：提交、保存、收藏、点赞、关注、申请、邀请、编辑资料等行为不能只 Toast 成功，必须写入 store/service/API，或明确标注为阶段性占位。
@@ -28,6 +28,14 @@
 ```
 
 ## 历史决策
+
+### 2026-07-14 Move the default focus to Stage 2 API contract preparation
+
+- Type: product scope / collaboration rule
+- Background: Stage 1 now persists created bottles, saves, likes, follows, trip applications and companion invitations through the shared user asset service/store, and Profile reads the same asset source. The previous stage description did not identify the next default execution focus.
+- Decision: Mark the Stage 1 core user asset loop as complete and make Stage 2 API contract preparation the default focus. Contract preparation covers user profile, user assets, trip applications and companion invitations; it does not authorize database adoption, full login, production backend persistence or real AI.
+- Impact: `README.md`, this decision summary and `docs/product-closure-audit.md` use the same current-stage wording. Remaining Stage 1 placeholder behaviors still require task-level review.
+- Follow-up: Create a separate implementation plan before adding or changing server endpoints, request fields or migration behavior.
 
 ### 2026-07-09 Add Failure Review loop for AI collaboration drift
 
