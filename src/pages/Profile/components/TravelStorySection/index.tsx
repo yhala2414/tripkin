@@ -26,9 +26,13 @@ export function TravelStorySection({
           <span className={styles.sectionIcon}>{'\uD83D\uDCDC'}</span>
           {'\u65C5\u884C\u6545\u4E8B'}
         </h2>
-        <span className={styles.viewAll} onClick={() => setStoriesOpen(true)}>
+        <button
+          type="button"
+          className={styles.viewAll}
+          onClick={() => setStoriesOpen(true)}
+        >
           {'\u67E5\u770B\u5168\u90E8 \u203A'}
-        </span>
+        </button>
       </header>
 
       <div className={styles.statsRow}>

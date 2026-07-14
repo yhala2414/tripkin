@@ -1,6 +1,8 @@
 # TripKin 产品闭环审计
 
 > 本文记录 TripKin 从页面型演示向 MVP 闭环产品演进前的技术产品审计结果。审计时间：2026-07-02。
+>
+> 最近回标：2026-07-14。Stage 1 核心用户资产闭环已完成，当前默认焦点为 Stage 2 API 契约准备。
 
 ## 0. 阅读状态说明
 
@@ -31,68 +33,30 @@
 | `VITE_API_BASE_URL` 注入                     | 部分验证 | Vite 转译模块确认可注入；网络捕获受本地 watch/helper 生命周期影响，后续应补一条稳定 smoke 脚本。                           |
 | 浏览器控制台                                 | 有风险   | 地图脚本出现 `FlyDataAuthTask error: INVALID_USER_DOMAIN`。                                                                |
 
-## 2. P0 闭环断点
+## 2. 当前阶段结论
 
-### Stage 1 前端资产持久化接入与补齐验收已完成
+### Stage 1 核心用户资产闭环已完成
 
-- 回标时间：2026-07-02。
-- 已完成范围：`useUserAssetStore` 继续使用 `tripkin-user-assets-v1` 做 Stage 1 前端持久化；Bottle 收藏、点赞、关注，Match 行程申请、同行邀请，以及 Profile 故事、行程、搭子、收藏区块已读写同一前端资产源。
-- 本轮补齐：Profile 已移除故事、行程、同行记录、收藏子页的隐式 mock fallback；空资产时展示“还没有沉淀行为”的空态，避免首页数字和点进列表不一致。
-- 边界说明：这不是 Stage 2 完成标记；用户资产尚未迁移到 `server/` API/database，后续仍需通过 `src/services` 设计并接入后端契约。
+- 回标时间：2026-07-14。
+- `useUserAssetStore` 使用 `tripkin-user-assets-v1` 持久化 Stage 1 用户资产。
+- Bottle 创建、收藏、点赞和关注通过 `src/services/userAssetService.ts` 写入共享资产。
+- Match 行程申请和同行邀请通过同一 service 写入，Profile 从同一 store 读取故事、行程、搭子和收藏资产。
+- Profile 身份卡和账号设置共同调用 Profile 层保存函数，昵称和签名写入持久化的 `useTripStore`。
+- Profile 已移除故事、行程、同行记录和收藏子页的隐式 mock fallback；空资产展示明确空态。
+- 边界：这只关闭 Stage 1 核心资产断点，不表示所有前端占位行为已经完成，也不是 Stage 2 实现完成标记。
 
-### 用户资产没有统一模型，Profile 大部分不是行为沉淀
+### 当前默认焦点：Stage 2 API 契约准备
 
-- 状态：历史断点，Stage 1 前端资产持久化已在后续工作中补齐。保留本节用于说明当时的闭环风险；复用本节结论前必须复核当前代码和决策记录。
+- 状态：未关闭，属于 Stage 2 契约风险。
+- 证据：前端本地数据与 `server/` 数据仍分别维护，依赖 `src/services` 适配；用户资料和用户资产尚未形成后端契约。
+- 下一步：单独规划用户资料、用户资产、行程申请和同行邀请的 API 边界，再决定迁移顺序和实现。
+- 限制：契约准备不开放数据库、完整登录、正式后端持久化、真实 AI 或页面直连后端 URL。
 
-- 证据文件：`src/pages/Profile/index.tsx`、`src/pages/Profile/mock.ts`
-- 当前行为：Profile 只读取 `useTripStore` 中的 MBTI、昵称和签名；旅行故事、行程、足迹、成就、收藏全部来自静态页面数据。
-- 为什么影响闭环：Bottle 收藏、投瓶、Match 申请和邀请不会进入“我的”，用户行为没有资产沉淀。
-- 建议修法：新增统一用户资产 store/service，先以前端持久化打通，再迁移到 server API。
+### Stage 1 历史断点摘要
 
-### Bottle 点赞、收藏、关注只改页面临时 state
-
-- 状态：历史断点，Stage 1 前端资产持久化已在后续工作中补齐。保留本节用于说明为什么行为成功反馈必须有资产写入路径。
-
-- 证据文件：`src/pages/Bottle/index.tsx` 的 `bottlePatches`、`handleToggleLike`、`handleToggleCollect`、`handleToggleFollow`
-- 当前行为：交互只存在当前页面 state，刷新后丢失，也不会同步 Profile。
-- 为什么影响闭环：用户看到“已收藏/已关注”，但收藏资产和关注关系不可追踪。
-- 建议修法：写入 `savedBottleIds`、`likedBottleIds`、`followedAuthorIds`，由 Profile 读取同一资产源。
-
-### Match 申请加入行程是假提交
-
-- 状态：历史断点，Stage 1 前端资产持久化已在后续工作中补齐。保留本节用于说明申请类行为必须进入用户资产。
-
-- 证据文件：`src/pages/Match/components/JoinTripSheet/index.tsx`
-- 当前行为：点击提交只 Toast “申请已提交，状态：待处理”，然后关闭弹层。
-- 为什么影响闭环：Profile 的“我的行程/申请记录”没有来源。
-- 建议修法：提交 `TripApplication`，记录 `tripId`、说明、状态和时间。
-
-### Match 发起同行邀请是假提交
-
-- 状态：历史断点，Stage 1 前端资产持久化已在后续工作中补齐。保留本节用于说明邀请类行为不能只 Toast 成功。
-
-- 证据文件：`src/pages/Match/components/ProfileSheet/index.tsx`
-- 当前行为：点击“发起同行邀请”只 Toast 成功。
-- 为什么影响闭环：搭子关系、邀请记录和后续状态都不可追踪。
-- 建议修法：写入 `CompanionInvitation`，Profile 搭子资产读取该记录。
-
-### Profile 首屏编辑昵称/签名没有回写全局状态
-
-- 状态：未关闭。复用本节结论前需要结合当前 Profile 编辑入口和 `useTripStore` / 用户资产服务实现复核。
-
-- 证据文件：`src/pages/Profile/components/TravelIdentityCard/index.tsx`、`src/pages/Profile/index.tsx`
-- 当前行为：身份卡编辑只改组件内 state；设置中心账号页才回写 `useTripStore`。
-- 为什么影响闭环：同一资料编辑有两个结果，刷新后首屏编辑丢失。
-- 建议修法：身份卡编辑和账号设置统一调用 Profile 层保存函数。
-
-### 前后端阶段性数据源分裂
-
-- 状态：未关闭。当前仍作为 Stage 2 后端闭环前的数据契约风险，需要结合 service 和 server 实现复核。
-
-- 证据文件：`src/services/bottleService.ts`、`src/pages/Bottle/data/bottleMockData.ts`、`server/src/data/bottles.ts`、`src/pages/Match/matchMock.ts`、`server/src/data/matches.ts`
-- 当前行为：前端本地数据和 server 数据各一套，依赖 service 适配。
-- 为什么影响闭环：配置 API 后可能展示另一套数据，字段语义和行为回写容易不一致。
-- 建议修法：先统一共享类型和资产写入契约，再逐步收敛数据源。
+- 统一用户资产模型、Bottle 持久化互动、Match 申请/邀请写入和 Profile 双入口资料保存均已关闭。
+- 这些历史断点只用于解释行为成功必须对应 store/service/API 写入路径，不再作为当前任务或推荐修法。
+- 详细实现和决策依据见 `docs/decision-notes/README.md` 的 2026-07-02 用户资产决策及当前代码。
 
 ## 3. P1 产品补全项
 
@@ -100,7 +64,6 @@
 
 - 首页搜索/推荐只跳路由，不写目的地上下文。证据：`src/pages/Home/index.tsx` 的 `mockSearchItems`、`recommendCards`、`quickActions`。
 - Map 选择目的地能写 `useTripStore.destination` 并跳 Bottle/Match，但收藏目的地、浏览足迹、最近目的地没有沉淀。证据：`src/pages/Map/index.tsx`、`BottomSpotCard.tsx`、`BottomRegionCard.tsx`。
-- Bottle 投瓶可新增到列表，但本地模式只存在模块内存 `localCreatedBottlesByDest`，刷新丢失。证据：`src/services/bottleService.ts`。
 - Bottle “打招呼”“更换地点”“筛选”“图片上传”仍是占位反馈。证据：`src/pages/Bottle/index.tsx`。
 - Match 筛选是假应用，不影响列表。证据：`src/pages/Match/components/FilterSheet/index.tsx`。
 - 隐私/通知设置只在弹层内存。证据：`PrivacySettingsPage`、`NotificationSettingsPage`。
@@ -110,7 +73,7 @@
 
 状态：未关闭增强项。以下内容只说明上线前风险方向，不代表当前阶段可以直接打开对应能力。
 
-- 数据持久化：阶段 1 可先用 Zustand persist，阶段 2 再迁移 server API。
+- 数据持久化：Stage 1 已使用 Zustand persist；Stage 2 先定义 API 契约，再规划迁移，当前不引入数据库。
 - 匿名身份：MVP 至少需要匿名 `userId` 或设备级身份，否则资产无法归属。
 - 用户隐私：足迹、主页可见性、推荐可见性需要真实保存。
 - 内容安全：漂流瓶、同行申请、AI 内容都需要举报、屏蔽和审核策略。
@@ -124,18 +87,18 @@
 
 ## 5. 推荐的最小修复路径
 
-### 阶段 1：前端闭环
+### Stage 1 收尾：逐项判断剩余占位行为
 
-- 新增统一 `UserAsset` store，使用 Zustand persist。
-- Bottle 收藏、投瓶、关注，Match 申请、邀请，Profile 收藏、行程、搭子全部读写同一资产源。
-- 修正 Profile 身份卡编辑入口，统一回写 `useTripStore`。
-- 保留本地阶段性数据源，先保证刷新后关键状态仍在。
+- 对首页目的地上下文、Map 资产沉淀、Bottle 占位操作、Match 筛选和隐私/通知设置逐项确认产品意图。
+- 只有被当前任务明确打开的行为才实现写入；其余继续使用明确的阶段性占位文案，不显示假成功。
+- 不再重复新增用户资产 store，也不重做已经关闭的 Bottle、Match、Profile 核心链路。
 
-### 阶段 2：后端闭环
+### 当前焦点：Stage 2 API 契约准备
 
-- 将用户资料、用户资产、保存、申请、邀请迁移到 `server/` API。
+- 先定义用户资料、用户资产、保存、申请和邀请的服务/API 边界，形成独立实施计划。
 - 前端继续通过 `src/services` 访问，不在页面里直接拼后端 URL。
-- 收敛 Bottle/Match 前后端字段，减少适配层漂移。
+- 复核 Bottle/Match 的前后端字段和阶段性数据源差异，明确迁移兼容要求。
+- 本轮只准备契约，不实现数据库、完整登录、正式后端持久化或真实 AI。
 
 ### 阶段 3：AI 闭环
 
@@ -144,7 +107,9 @@
 - 卡片支持保存、投瓶、找搭子、加入行程，并在 Profile 展示生成/保存历史。
 - 真实 AI 接入前先用 mock AI 数据源、失败态和 fallback 跑通链路。
 
-## 6. 建议的数据模型草案
+## 6. 历史数据模型草案
+
+> 状态：2026-07-02 审计草案，仅作为 Stage 2 契约讨论输入，不是当前已确认接口或类型。正式字段必须在单独的 API 契约计划中确定。
 
 ```ts
 interface UserProfile {
@@ -211,7 +176,9 @@ interface CompanionInvitation {
 }
 ```
 
-## 7. 建议接口草案
+## 7. 历史接口草案
+
+> 状态：2026-07-02 审计草案，不代表接口已经获准或实现。Stage 2 开发前必须重新核对当前 service、server 路由和迁移边界。
 
 | Method   | Endpoint                      | 优先级 | 用途                              |
 | -------- | ----------------------------- | ------ | --------------------------------- |

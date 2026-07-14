@@ -22,16 +22,19 @@ function PartnerMatchCard({ item, onOpen }: PartnerMatchCardProps) {
       </span>
       <div className={styles.body}>
         <div className={styles.titleRow}>
-          <h2 className={styles.name}>{item.name}</h2>
-          <span className={styles.identity}>{item.identityStatus}</span>
+          <div className={styles.nameGroup}>
+            <h2 className={styles.name}>{item.name}</h2>
+            <span className={styles.identity}>{item.identityStatus}</span>
+          </div>
           <span className={styles.score}>匹配度 {item.matchScore}%</span>
-          {item.persona && (
-            <span className={styles.persona}>
-              {item.persona.emoji} {item.persona.tripkinTitleCn} ·{' '}
-              {item.classicMbti}
-            </span>
-          )}
         </div>
+
+        {item.persona && (
+          <span className={styles.persona}>
+            {item.persona.emoji} {item.persona.tripkinTitleCn} ·{' '}
+            {item.classicMbti}
+          </span>
+        )}
 
         <div className={styles.tags}>
           {item.interests.map((interest) => (
@@ -41,6 +44,17 @@ function PartnerMatchCard({ item, onOpen }: PartnerMatchCardProps) {
             </span>
           ))}
         </div>
+
+        <button
+          type="button"
+          className={styles.action}
+          onClick={(event) => {
+            event.stopPropagation()
+            onOpen(item)
+          }}
+        >
+          查看资料
+        </button>
 
         <div className={styles.meta}>
           <p className={styles.metaRow}>
@@ -69,17 +83,6 @@ function PartnerMatchCard({ item, onOpen }: PartnerMatchCardProps) {
         <p className={styles.summary}>{item.summary}</p>
         <p className={styles.activeTime}>{item.activeTime}</p>
       </div>
-
-      <button
-        type="button"
-        className={styles.action}
-        onClick={(event) => {
-          event.stopPropagation()
-          onOpen(item)
-        }}
-      >
-        查看资料
-      </button>
     </article>
   )
 }

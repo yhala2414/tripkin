@@ -47,11 +47,17 @@
 }
 
 .titleRow {
-  display: grid;
-  grid-template-columns: max-content auto;
+  display: flex;
+  justify-content: space-between;
   gap: 8px;
   align-items: center;
-  padding-right: 92px;
+}
+
+.nameGroup {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
 }
 
 .name {
@@ -73,12 +79,19 @@
   color: var(--match-color-primary);
   font-size: 11px;
   font-weight: 700;
+  white-space: nowrap;
+}
+
+.score {
+  flex: none;
 }
 
 .persona {
   display: inline-flex;
+  max-width: 100%;
   align-items: center;
   gap: 3px;
+  margin-top: 8px;
   min-height: 19px;
   padding: 0 8px;
   border-radius: var(--match-radius-xs);
@@ -91,6 +104,7 @@
   font-size: 11px;
   font-weight: 700;
   border: 1px solid var(--color-brand-primary-line);
+  white-space: nowrap;
 }
 
 .tags {
@@ -98,7 +112,6 @@
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 8px;
-  padding-right: 84px;
 }
 
 .tag {
@@ -153,11 +166,12 @@
 }
 
 .action {
-  position: absolute;
-  top: 54px;
-  right: var(--match-space-card-padding);
-  width: 82px;
-  height: 34px;
+  display: inline-flex;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 14px;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--match-color-primary);
   border-radius: var(--match-radius-pill);
   background: var(--match-color-surface-soft);
@@ -181,16 +195,8 @@
     height: 66px;
   }
 
-  .titleRow,
-  .tags {
-    padding-right: 76px;
-  }
-
-  .action {
-    top: 52px;
-    right: var(--match-space-card-padding-compact);
-    width: 74px;
-    height: 32px;
+  .nameGroup {
+    gap: 5px;
   }
 }
 

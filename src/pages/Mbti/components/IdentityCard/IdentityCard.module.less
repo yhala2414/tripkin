@@ -26,8 +26,8 @@
 }
 
 .backBtn {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -57,12 +57,23 @@
 }
 
 .shareBtn {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
   font-size: 14px;
   color: var(--color-brand-primary);
   background: none;
   border: none;
   cursor: pointer;
   font-weight: 600;
+}
+
+.shareBtn svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* ---- 身份卡片：左头像 + 右信息 ---- */

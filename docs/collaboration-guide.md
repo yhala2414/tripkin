@@ -41,6 +41,8 @@ npm install
 | `docs/coding-guide.md`          | 代码位置、样式、目录职责、行为闭环实现规则。                              |
 | `docs/decision-notes/README.md` | 长期有效决策摘要和会影响多人协作的历史决策。                              |
 | `docs/product-closure-audit.md` | 阶段审计证据和闭环断点记录，不是实时任务清单。                            |
+| `DESIGN.md`                     | 已确认的视觉规则和受保护视觉基准，是视觉工作的 source of truth。          |
+| `audit.md`                      | 当前视觉差距、验证证据和下一批候选项，不是设计规范或功能闭环清单。        |
 | `.local-docs/`                  | ignored 本地草稿和线索，不能作为正式需求、规范或决策依据。                |
 
 ## 开发中
