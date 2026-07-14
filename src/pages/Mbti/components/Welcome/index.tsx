@@ -1,14 +1,21 @@
 import { Toast } from 'antd-mobile'
+import {
+  CompassOutline,
+  SendOutline,
+  StarOutline,
+  TeamOutline,
+  TravelOutline,
+} from 'antd-mobile-icons'
 import { useTripStore } from '@/store/useTripStore'
 import illustrationSrc from '../../assets/welcom-illustration.png'
 import sharedStyles from '../shared.module.less'
 import styles from './Welcome.module.less'
 
 const FEATURES = [
-  { icon: '🧭', label: '了解自我' },
-  { icon: '✨', label: '发现灵感' },
-  { icon: '👥', label: '找同路人' },
-  { icon: '🗺️', label: '匹配行程' },
+  { icon: <CompassOutline aria-hidden="true" />, label: '了解自我' },
+  { icon: <StarOutline aria-hidden="true" />, label: '发现灵感' },
+  { icon: <TeamOutline aria-hidden="true" />, label: '找同路人' },
+  { icon: <TravelOutline aria-hidden="true" />, label: '匹配行程' },
 ]
 
 interface WelcomeProps {
@@ -40,18 +47,7 @@ export function Welcome({ onStart, onViewResult, onSkip }: WelcomeProps) {
           onClick={handleShare}
           aria-label="分享"
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-            <polyline points="16 6 12 2 8 6" />
-            <line x1="12" y1="2" x2="12" y2="15" />
-          </svg>
+          <SendOutline aria-hidden="true" />
         </button>
       </div>
 
@@ -95,7 +91,8 @@ export function Welcome({ onStart, onViewResult, onSkip }: WelcomeProps) {
           className={`${sharedStyles.btn} ${sharedStyles.btnPrimary}`}
           onClick={onStart}
         >
-          <span>✨ 开始测试</span>
+          <CompassOutline aria-hidden="true" />
+          <span>开始测试</span>
         </button>
         {hasResult && (
           <button

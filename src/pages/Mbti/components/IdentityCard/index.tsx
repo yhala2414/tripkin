@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import { Toast } from 'antd-mobile'
+import { LeftOutline, SendOutline } from 'antd-mobile-icons'
 import type { PersonaId } from '@/types/mbti'
 import { PERSONALITIES } from '../../data'
 import { getPersonaPresentation } from '@/utils/personaPresentation'
@@ -54,19 +55,16 @@ export function IdentityCard({ personaId, onBack }: IdentityCardProps) {
           onClick={onBack}
           aria-label="返回"
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
+          <LeftOutline aria-hidden="true" />
         </button>
         <span className={styles.topTitle}>你的旅行MBTI是</span>
-        <button type="button" className={styles.shareBtn} onClick={handleShare}>
+        <button
+          type="button"
+          className={styles.shareBtn}
+          onClick={handleShare}
+          aria-label="分享旅行 MBTI 结果"
+        >
+          <SendOutline aria-hidden="true" />
           分享
         </button>
       </div>
@@ -114,7 +112,8 @@ export function IdentityCard({ personaId, onBack }: IdentityCardProps) {
           className={`${sharedStyles.btn} ${sharedStyles.btnPrimary} ${sharedStyles.btnLg}`}
           onClick={handleShare}
         >
-          <span>🎯 分享我的结果</span>
+          <SendOutline aria-hidden="true" />
+          <span>分享我的结果</span>
         </button>
       </footer>
     </div>

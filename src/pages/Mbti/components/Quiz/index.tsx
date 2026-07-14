@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { LeftOutline } from 'antd-mobile-icons'
 import type { ChoiceLetter } from '@/types/mbti'
 import { QUESTIONS } from '../../data'
 import sharedStyles from '../shared.module.less'
@@ -79,7 +80,7 @@ export function Quiz({ onComplete, onBack }: QuizProps) {
           disabled={!canGoBack}
           aria-label="返回上一题"
         >
-          ←
+          <LeftOutline aria-hidden="true" />
         </button>
         <div className={styles.progressContent}>
           <div className={styles.bar}>

@@ -1,3 +1,4 @@
+import { CloseOutline } from 'antd-mobile-icons'
 import styles from './MbtiEntryModal.module.less'
 
 interface MbtiEntryModalProps {
@@ -25,7 +26,7 @@ function MbtiEntryModal({ open, onEnter, onClose }: MbtiEntryModalProps) {
           onClick={onClose}
           aria-label="关闭旅行 MBTI 引导"
         >
-          x
+          <CloseOutline aria-hidden="true" />
         </button>
         <div className={styles.visual} aria-hidden="true">
           <span className={styles.orb} />

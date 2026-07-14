@@ -12,6 +12,7 @@
 - 行为闭环：提交、保存、收藏、点赞、关注、申请、邀请、编辑资料等行为不能只 Toast 成功，必须写入 store/service/API，或明确标注为阶段性占位。
 - 底部导航：只有 `/`、`/map`、`/match`、`/profile` 显示主底栏；`/mbti`、`/mbti/test`、`/mbti/result`、`/bottle` 是流程页或分支页。
 - 组件库：标准移动端交互可使用 `antd-mobile`，视觉仍由 TripKin CSS Modules 和设计 token 控制。
+- 移动触控基线：共享返回与弹层关闭操作使用至少 44 × 44px 点击盒；图标可保持原视觉尺寸，页面私有高频操作按同一基线落实。
 - 验证边界：源码或运行行为变更运行 `npm run lint` 和 `npm run build`；纯文档变更可按需运行 `npm run format:check`。
 - 偏航复盘：当人或 AI 误读上下文、跳过规则、扩大范围、把本地草稿当正式规则、或重复同类错误时，先做 Failure Review，分类失败来源，再决定修正行动、正式文档、决策记录或本地草稿。
 
@@ -28,6 +29,14 @@
 ```
 
 ## 历史决策
+
+### 2026-07-14 Establish a 44px shared touch-target baseline
+
+- Type: shared components / mobile accessibility
+- Background: The visual audit found that shared back and bottom-sheet close controls were visible but their actual hit areas were smaller than the mobile 44px baseline.
+- Decision: `PageTopBar` back and `BaseBottomSheet` close controls provide at least 44 × 44px hit areas while keeping their icons at the approved visual size. Page-local high-frequency controls follow the same rule without mechanically enlarging every compact label or chip.
+- Impact: Shared top bars and bottom sheets, plus audited Bottle, Match, Profile, and MBTI high-frequency actions.
+- Follow-up: Recheck title centering, close-button placement, adjacent target spacing, and modal behavior whenever shared shell dimensions change.
 
 ### 2026-07-14 Move the default focus to Stage 2 API contract preparation
 

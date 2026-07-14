@@ -225,8 +225,7 @@ function Profile() {
 
   return (
     <main className={styles.page}>
-      {/* 1. Travel Identity Card */}
-      <div className={styles.glassCard}>
+      <div className={`${styles.glassCard} ${styles.identityCard}`}>
         <TravelIdentityCard
           personaId={personaId}
           nickname={nickname}
@@ -239,65 +238,75 @@ function Profile() {
         />
       </div>
 
-      {/* 2. Travel Persona */}
-      <div className={styles.glassCard}>
-        <TravelPersonaSection
-          personaId={personaId}
-          travelIndices={mockProfileData.travelIndices}
-        />
-      </div>
+      <section className={styles.profileGroup} aria-labelledby="profile-assets">
+        <h2 id="profile-assets" className={styles.groupTitle}>
+          当前旅行资产
+        </h2>
+        <div className={styles.glassCard}>
+          <TravelPersonaSection
+            personaId={personaId}
+            travelIndices={mockProfileData.travelIndices}
+          />
+        </div>
+        <div className={styles.glassCard}>
+          <MatchingProfileSection
+            matchingProfile={matchingProfile}
+            companionHistoryItems={companionHistoryItems}
+          />
+        </div>
+        <div className={styles.glassCard}>
+          <TravelStorySection
+            bottleStats={bottleStats}
+            featuredStories={featuredStories}
+            storyItems={storyItems}
+          />
+        </div>
+        <div className={styles.glassCard}>
+          <TripSection tripStats={tripStats} />
+        </div>
+        <div className={styles.glassCard}>
+          <CollectionSection
+            collectionStats={collectionStats}
+            destinationItems={favoriteDestinationItems}
+            bottleItems={favoriteBottleItems}
+            companionItems={favoriteCompanionItems}
+          />
+        </div>
+      </section>
 
-      {/* 3. Matching Profile */}
-      <div className={styles.glassCard}>
-        <MatchingProfileSection
-          matchingProfile={matchingProfile}
-          companionHistoryItems={companionHistoryItems}
-        />
-      </div>
+      <section
+        className={`${styles.profileGroup} ${styles.longTermGroup}`}
+        aria-labelledby="profile-history"
+      >
+        <h2 id="profile-history" className={styles.groupTitle}>
+          旅行历程
+        </h2>
+        <div className={`${styles.glassCard} ${styles.secondaryCard}`}>
+          <FootprintSection footprintStats={mockProfileData.footprintStats} />
+        </div>
+        <div className={`${styles.glassCard} ${styles.secondaryCard}`}>
+          <TravelAchievementSection
+            achievements={mockProfileData.achievements}
+          />
+        </div>
+      </section>
 
-      {/* 4. Travel Stories */}
-      <div className={styles.glassCard}>
-        <TravelStorySection
-          bottleStats={bottleStats}
-          featuredStories={featuredStories}
-          storyItems={storyItems}
-        />
-      </div>
-
-      {/* 5. My Trips */}
-      <div className={styles.glassCard}>
-        <TripSection tripStats={tripStats} />
-      </div>
-
-      {/* 6. Footprints */}
-      <div className={styles.glassCard}>
-        <FootprintSection footprintStats={mockProfileData.footprintStats} />
-      </div>
-
-      {/* 7. Achievements */}
-      <div className={styles.glassCard}>
-        <TravelAchievementSection achievements={mockProfileData.achievements} />
-      </div>
-
-      {/* 8. Collections */}
-      <div className={styles.glassCard}>
-        <CollectionSection
-          collectionStats={collectionStats}
-          destinationItems={favoriteDestinationItems}
-          bottleItems={favoriteBottleItems}
-          companionItems={favoriteCompanionItems}
-        />
-      </div>
-
-      {/* 9. Settings */}
-      <div className={styles.glassCard}>
-        <SettingSection
-          settingsItems={mockProfileData.settingsItems}
-          nickname={nickname ?? '旅行者'}
-          tagline={tagline ?? ''}
-          onSaveAccount={handleSaveAccount}
-        />
-      </div>
+      <section
+        className={`${styles.profileGroup} ${styles.settingsGroup}`}
+        aria-labelledby="profile-settings"
+      >
+        <h2 id="profile-settings" className={styles.groupTitle}>
+          账号与设置
+        </h2>
+        <div className={`${styles.glassCard} ${styles.settingsCard}`}>
+          <SettingSection
+            settingsItems={mockProfileData.settingsItems}
+            nickname={nickname ?? '旅行者'}
+            tagline={tagline ?? ''}
+            onSaveAccount={handleSaveAccount}
+          />
+        </div>
+      </section>
     </main>
   )
 }
