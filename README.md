@@ -151,8 +151,23 @@ TripKin 当前按阶段放开能力，避免一次性引入过多系统导致维
 - lint-staged
 - commitlint
 - cz-git
+- GitHub Actions
 
 ## 🚀 本地运行
+
+当前开发和 CI 环境统一使用：
+
+```txt
+Node.js 20.19.0
+npm 10.8.2
+```
+
+根目录 `.nvmrc` 记录 Node.js 版本。请先确认本地版本一致：
+
+```bash
+node -v
+npm -v
+```
 
 安装依赖：
 
@@ -355,11 +370,13 @@ update
 
 ## ✅ 验证
 
-如果改动包含源码、样式、路由、脚本、依赖、工程配置、后端代码，或会影响运行行为，完成前至少运行：
+如果改动包含源码、样式、路由、脚本、依赖、工程配置、后端代码，或会影响运行行为，完成前运行：
 
 ```bash
+npm run format:check
 npm run lint
 npm run build
+npm --prefix server run build
 ```
 
 如果只修改 Markdown 文档，且不改变代码、配置、脚本或运行行为，不强制运行上述命令。
@@ -368,4 +385,16 @@ npm run build
 
 ```bash
 npm run format:check
+```
+
+GitHub Actions 会在 Pull Request 和推送到 `main` 时使用 Node.js `20.19.0`、npm `10.8.2` 和锁文件重新安装依赖，并执行同一套前端检查与服务端构建。CI 使用 `npm ci` 保证依赖安装可复现；本地需要完整复现 CI 时运行：
+
+```bash
+npm ci
+npm run format:check
+npm run lint
+npm run build
+cd server
+npm ci
+npm run build
 ```
