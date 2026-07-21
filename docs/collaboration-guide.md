@@ -189,11 +189,13 @@ Prevention:
 
 ## 提交前
 
-如果本次改动包含源码、样式、路由、脚本、依赖、工程配置、后端代码，或会影响页面运行行为，提交前至少运行：
+如果本次改动包含源码、样式、路由、脚本、依赖、工程配置、后端代码，或会影响页面运行行为，提交前运行：
 
 ```bash
+npm run format:check
 npm run lint
 npm run build
+npm --prefix server run build
 ```
 
 如果只修改 Markdown 文档，且不改变代码、配置、脚本或运行行为，不强制运行上述命令。
@@ -203,6 +205,17 @@ npm run build
 ```bash
 npm run format:check
 ```
+
+## GitHub CI
+
+Pull Request 和推送到 `main` 会触发 `.github/workflows/ci.yml`：
+
+- 前端使用锁文件重新安装依赖，并依次执行格式检查、代码检查和构建。
+- 服务端使用 `server/package-lock.json` 独立安装依赖并构建 TypeScript。
+- 两个检查使用 Node.js `20.19.0` 和 npm `10.8.2`，任一失败都会使 CI 失败。
+- 同一分支推送新提交时，旧的未完成运行会被取消。
+
+CI 是本地验证契约的远端重复，不替代开发者在提交前运行相关命令。当前 CI 不包含部署、Docker、E2E、Playwright、正式测试框架、发布产物或远端提交信息检查。
 
 ## 本地页面验证
 

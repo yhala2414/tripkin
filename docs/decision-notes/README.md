@@ -13,7 +13,8 @@
 - 底部导航：只有 `/`、`/map`、`/match`、`/profile` 显示主底栏；`/mbti`、`/mbti/test`、`/mbti/result`、`/bottle` 是流程页或分支页。
 - 组件库：标准移动端交互可使用 `antd-mobile`，视觉仍由 TripKin CSS Modules 和设计 token 控制。
 - 移动触控基线：共享返回与弹层关闭操作使用至少 44 × 44px 点击盒；图标可保持原视觉尺寸，页面私有高频操作按同一基线落实。
-- 验证边界：源码或运行行为变更运行 `npm run lint` 和 `npm run build`；纯文档变更可按需运行 `npm run format:check`。
+- 验证边界：源码或运行行为变更运行前端格式、lint、build 与服务端 build；纯文档变更可按需运行 `npm run format:check`。
+- GitHub CI：Pull Request 和推送到 `main` 使用 Node.js 20.19.0、npm 10.8.2，在独立 Job 中阻断式运行前端格式/lint/build 与服务端 build；当前不包含部署、E2E 或正式测试框架。
 - 偏航复盘：当人或 AI 误读上下文、跳过规则、扩大范围、把本地草稿当正式规则、或重复同类错误时，先做 Failure Review，分类失败来源，再决定修正行动、正式文档、决策记录或本地草稿。
 
 ## 记录模板
@@ -29,6 +30,14 @@
 ```
 
 ## 历史决策
+
+### 2026-07-21 Add minimal GitHub CI and PR collaboration contract
+
+- Type: engineering workflow / verification
+- Background: Local lint, formatting, frontend build and server build commands existed, but GitHub did not repeat them for Pull Requests or the main branch, and the repository did not declare one shared Node/npm baseline.
+- Decision: Standardize local and CI environments on Node.js 20.19.0 and npm 10.8.2. Run frontend format, lint and build checks plus the independent server build as blocking GitHub Actions jobs for Pull Requests and pushes to `main`. Add a TripKin-specific PR template that exposes stage, behavior write path, impact and verification evidence.
+- Impact: `.nvmrc`, both npm project manifests and lock files, `.github/`, README and collaboration guidance share one verification contract.
+- Follow-up: Keep deployment, Docker, E2E, Playwright, formal test frameworks, release artifacts, Dependabot, Issue templates and remote commit-message enforcement out of this stage. Consider branch protection only after the CI has been exercised by real Pull Requests.
 
 ### 2026-07-14 Establish a 44px shared touch-target baseline
 
